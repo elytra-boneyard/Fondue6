@@ -1,0 +1,9 @@
+{
+	"sizzle": {
+		"category": "neutral",
+		"sounds": [
+			"fondue:sizzle"
+		],
+		"subtitle": "subtitles.fondue.sizzle"
+	}
+}
