@@ -50,15 +50,17 @@ public class ModulePale extends Module {
 				e.getItemStack().getItem() instanceof ItemPaleRottenFlesh) {
 			// poor doggo :(
 			EntityWolf ew = (EntityWolf)e.getTarget();
+			int dur = 3600;
 			int lvl = 0;
 			PotionEffect active = ew.getActivePotionEffect(PALE);
 			if (active != null) {
+				dur = active.getDuration()+200;
 				lvl = active.getAmplifier()+1;
 				if (lvl > 3) {
 					lvl = 3;
 				}
 			}
-			ew.addPotionEffect(new PotionEffect(PALE, 3600));
+			ew.addPotionEffect(new PotionEffect(PALE, dur, lvl));
 			ew.heal(1);
 			e.getItemStack().shrink(1);
 			e.setCanceled(true);

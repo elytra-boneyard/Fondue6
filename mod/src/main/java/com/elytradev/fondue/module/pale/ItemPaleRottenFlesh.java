@@ -40,8 +40,10 @@ public class ItemPaleRottenFlesh extends ItemFood {
 	@Override
 	protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
 		int lvl = 0;
+		int dur = 3600;
 		PotionEffect active = player.getActivePotionEffect(ModulePale.PALE);
 		if (active != null) {
+			dur = active.getDuration()+200;
 			lvl = active.getAmplifier()+1;
 			if (lvl > 3) {
 				lvl = 3;
@@ -49,7 +51,7 @@ public class ItemPaleRottenFlesh extends ItemFood {
 			}
 		}
 		
-		player.addPotionEffect(new PotionEffect(ModulePale.PALE, 3600, lvl));
+		player.addPotionEffect(new PotionEffect(ModulePale.PALE, dur, lvl));
 	}
 
 }
