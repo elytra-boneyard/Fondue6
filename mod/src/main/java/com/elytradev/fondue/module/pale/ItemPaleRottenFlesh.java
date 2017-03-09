@@ -25,6 +25,7 @@
 package com.elytradev.fondue.module.pale;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -44,6 +45,7 @@ public class ItemPaleRottenFlesh extends ItemFood {
 			lvl = active.getAmplifier()+1;
 			if (lvl > 3) {
 				lvl = 3;
+				player.playSound(SoundEvents.ENTITY_ZOMBIE_AMBIENT, 0.5f, 0.8f);
 			}
 		}
 		

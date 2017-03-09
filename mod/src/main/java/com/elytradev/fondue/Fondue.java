@@ -1,10 +1,15 @@
 package com.elytradev.fondue;
 
+import java.lang.reflect.Modifier;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.elytradev.fondue.module.Module;
-import com.elytradev.fondue.module.furnacebread.ModuleFurnaceBread;
-import com.elytradev.fondue.module.instantpickup.ModuleInstantPickup;
-import com.elytradev.fondue.module.pale.ModulePale;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -14,12 +19,22 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid="fondue", name="Fondue", version="@VERSION@")
 public class Fondue {
+
+	private static final Logger log = LogManager.getLogger("Fondue");
 	
-	private final ImmutableList<Module> modules = ImmutableList.of(
-			new ModuleFurnaceBread(),
-			new ModuleInstantPickup(),
-			new ModulePale()
-			);
+	private final List<Module> modules = Lists.newArrayList();
+	
+	public Fondue() throws Exception {
+		for (ClassInfo ci : ClassPath.from(getClass().getClassLoader()).getTopLevelClassesRecursive("com.elytradev.fondue.module")) {
+			Class<?> clazz = ci.load();
+			if (Modifier.isAbstract(clazz.getModifiers())) continue;
+			if (clazz.getSuperclass() == Module.class) {
+				modules.add((Module)clazz.newInstance());
+				log.info("Discovered module {}", clazz.getSimpleName().replace("Module", ""));
+			}
+		}
+		
+	}
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
