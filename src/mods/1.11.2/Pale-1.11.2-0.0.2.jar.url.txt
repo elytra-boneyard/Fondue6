@@ -1,1 +1,0 @@
-https://github.com/elytra/Pale/releases/download/0.0.2/Pale-1.11.2-0.0.2.jar
