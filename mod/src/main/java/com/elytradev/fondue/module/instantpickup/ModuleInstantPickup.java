@@ -54,7 +54,6 @@ public class ModuleInstantPickup extends Module {
 		BlockPos pos = e.getPos();
 		for (ItemStack is : e.getDrops()) {
 			if (is.isEmpty()) continue;
-			System.out.println(is);
 			if (e.getWorld().rand.nextFloat() <= e.getDropChance()) {
 	            double xOfs = e.getWorld().rand.nextFloat() * 0.5 + 0.25;
 	            double yOfs = e.getWorld().rand.nextFloat() * 0.5 + 0.25;

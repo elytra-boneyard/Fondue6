@@ -38,6 +38,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 
 public class PotionPale extends Potion {
 
@@ -64,13 +65,15 @@ public class PotionPale extends Potion {
 		if (elb.isImmuneToFire() || elb.isWet()) return;
 		boolean day = (elb.world.getWorldTime()%24000) < 13000;
 		if (elb.getHealth() > 0 && day && elb.world.canSeeSky(elb.getPosition())) {
-			elb.playSound(ModulePale.SIZZLE, 0.15f, 0.85f+(elb.world.rand.nextFloat()/5f));
-			elb.attackedAtYaw = 270;
-			// !?
 			if (!elb.world.isRemote) {
+				float dmg = 1;
+				if (!elb.world.getBiome(elb.getPosition()).canRain()) {
+					dmg = 2;
+				}
 				if (elb instanceof EntityPlayer) {
-					lastDamage.set(elb, 1f);
-					damageEntity.invoke(elb, SIZZLE, 1f);
+					// !?
+					lastDamage.set(elb, dmg);
+					damageEntity.invoke(elb, SIZZLE, dmg);
 					lastDamageSource.set(elb, SIZZLE);
 					lastDamageStamp.set(elb, elb.world.getTotalWorldTime());
 					if (elb.getHealth() <= 0) {
@@ -79,8 +82,9 @@ public class PotionPale extends Potion {
 						}
 					}
 				} else {
-					elb.attackEntityFrom(SIZZLE, 1);
+					elb.attackEntityFrom(SIZZLE, dmg);
 				}
+				elb.world.playSound(null, elb.posX, elb.posY, elb.posZ, ModulePale.SIZZLE, SoundCategory.NEUTRAL, 0.15f, 0.85f+(elb.world.rand.nextFloat()/5f));
 			}
 		}
 	}
