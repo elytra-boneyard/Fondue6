@@ -2,35 +2,35 @@
 # Fondue 6
 *A tasty mixture of gooey melted mods for 1.11.2*
 
-Fondue is (or at least, will be) a modpack founded on the following three 
-rules:
+**Not yet ready for use.**
+
+Fondue is a modpack founded on the following three rules:
 
 1. No teleportation. Period. Including items, players, energy, etc.
 2. No passive power generation. This includes solar, wind, water, etc.
 3. All builds must be at least a little decorative.
 
-These rules are generally enforced via honor system, owing to the modpack's 
-origins as a private server pack, but config changes will be made when possible.
+The modpack has all the usual "thought-out" modpack things: no duplicate ores,
+ore dictionary unification, no recipe conflicts, carefully considered config
+changes. World compatibility will be maintained between minor versions; if it
+is broken, then the pack will become Fondue 7.
 
-To help with the third rule, decorative blocks should be very cheap, sometimes 
-going as far as to offer infinite free decor blocks at spawn.
+## Goals
 
-Of course, the modpack also has all the usual "well-designed" modpack things:
-no duplicate ores, ore dictionary unification, and thought-out config changes. 
-Things won't be changed on a whim, and world compatibility will be maintained 
-between minor versions. (i.e: if world compat breaks, that'll be Fondue 7.)
+* Work well on a server with a small-to-medium population. (about 5-24 players)
+* Work well in singleplayer.
+* Encourage maps lasting a month, preferably much more.
+* Be fairly unique, we don't need yet another generic kitchen sink pack.
+* But at the same time, include enough mods to give everyone something to do.
+* Modify vanilla mechanics where it improves gameplay or balance.
+* Encourage exploration.
+* Encourage socialization.
+* Work at least passably on lesser hardware (<=2GiB of RAM, integrated graphics)
 
-## Mods
-The following mods compose the core experience of Fondue 6, and as such, mods 
-duplicating their functionality will *not* be added:
+## Non-Goals
 
-* [BuildCraft](https://mod-buildcraft.com)
-* [Correlated](https://github.com/elytra/Correlated)
-* [RailCraft](http://railcraft.info)
-
-Suggestions to add mods that clash with these three core mods will be 
-immediately rejected. As such, do not suggest to add Refined Storage, Thermal 
-Dynamics, Ender IO, Applied Energistics, etc etc. Especially do not suggest
-these core mods be removed.
-
-Fondue will be distributed on the SurgePlay launcher when it is ready.
+* Work well on a server with a large population. (100+ players)
+* Allow reverting 3-founding-rule balance changes.
+* Require using every mod in the pack through contrived recipes.
+* Gating "overpowered" mods, or really any form of gating at all.
+* Include every mod possible.
