@@ -1,0 +1,18 @@
+{
+  "name" : "fondue-6",
+  "title" : "Fondue 6",
+  "gameVersion" : "1.11.2",
+  "features" : [ ],
+  "userFiles" : {
+    "include" : [
+      "options.txt",
+      "optionsshaders.txt"
+    ],
+    "exclude" : [ ]
+  },
+  "launch" : {
+    "flags" : [
+      "-Dfml.ignoreInvalidMinecraftCertificates=true"
+    ]
+  }
+}

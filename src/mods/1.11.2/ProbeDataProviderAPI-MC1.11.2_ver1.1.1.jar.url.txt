@@ -1,0 +1,1 @@
+https://github.com/elytra/ProbeDataProviderAPI/releases/download/MC1.11.2_ver1.1.1/ProbeDataProviderAPI-MC1.11.2_ver1.1.1.jar
