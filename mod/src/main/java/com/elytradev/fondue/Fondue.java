@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.elytradev.concrete.NetworkContext;
 import com.elytradev.fondue.module.Module;
 import com.elytradev.fondue.module.ModuleClient;
 import com.google.common.collect.Lists;
@@ -32,6 +33,7 @@ public class Fondue {
 	public static Fondue inst;
 	
 	public final List<Module> modules = Lists.newArrayList();
+	public NetworkContext network;
 	
 	@EventHandler
 	public void onConstructing(FMLConstructionEvent e) throws Exception {
@@ -52,6 +54,7 @@ public class Fondue {
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
+		network = NetworkContext.forChannel("fondue");
 		ProgressBar bar = ProgressManager.push("Pre initializing modules", modules.size());
 		for (Module m : modules) {
 			bar.step(m.getClass().getSimpleName().replace("Module", ""));
