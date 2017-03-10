@@ -5,13 +5,18 @@ import com.elytradev.fondue.module.Module;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer.SleepResult;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules.ValueType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.terraingen.ChunkGeneratorEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,7 +40,21 @@ public class ModuleObelisk extends Module {
 		GameRegistry.register(ATTUNE = new SoundEvent(new ResourceLocation("fondue", "attune")).setRegistryName("attune"));
 		GameRegistry.registerTileEntity(TileEntityObelisk.class, "fondue:obelisk");
 		
+		
+		
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@SubscribeEvent
+	public void onPlace(BlockEvent.PlaceEvent e) {
+		if (e.getPlacedBlock().getBlock() == Blocks.BED) {
+			e.setCanceled(true);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onBedCheck(PlayerSleepInBedEvent e) {
+		e.setResult(SleepResult.OTHER_PROBLEM);
 	}
 	
 	@SubscribeEvent
@@ -51,6 +70,11 @@ public class ModuleObelisk extends Module {
 		if (e.getWorld().provider.isSurfaceWorld()) {
 			GenerateObelisk.populate(e.getChunkX(), e.getChunkZ(), e.getWorld().getSeed(), e.getWorld());
 		}
+	}
+	
+	@SubscribeEvent
+	public void onWake(PlayerWakeUpEvent e) {
+		
 	}
 	
 	@SubscribeEvent

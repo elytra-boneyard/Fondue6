@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -22,6 +24,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,15 +33,23 @@ public class ModuleObeliskClient extends ModuleClient {
 
 	private static final ResourceLocation VIGNETTE = new ResourceLocation("fondue", "textures/misc/vignette.png");
 	
-	private ObeliskSound PULSATING;
+	private ObeliskSound sound;
 	private boolean playing = false;
 	
 	@Override
 	public void onInit(FMLInitializationEvent e) {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityObelisk.class, new RenderObelisk());
-		PULSATING = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 1, 1);
+		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 1, 1);
 		
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@SubscribeEvent
+	public void onTooltip(ItemTooltipEvent e) {
+		if (e.getItemStack().getItem() == Items.BED) {
+			e.getToolTip().add(I18n.format("fondue.bedsAreDisabled"));
+			e.getToolTip().add(I18n.format("fondue.findObelisks"));
+		}
 	}
 	
 	@SubscribeEvent
@@ -58,16 +69,16 @@ public class ModuleObeliskClient extends ModuleClient {
 					Vec3d a = mc.player.getPositionVector();
 					Vec3d b = new Vec3d(te.getPos().getX()+0.5, a.yCoord, te.getPos().getZ()+0.5);
 					dist = (float)a.distanceTo(b);
-					PULSATING.setPosition(te.getPos());
+					sound.setPosition(te.getPos());
 					if (!playing) {
-						mc.getSoundHandler().playSound(PULSATING);
+						mc.getSoundHandler().playSound(sound);
 						playing = true;
 					}
 				}
 			}
 			
 			if (teo == null && playing) {
-				mc.getSoundHandler().stopSound(PULSATING);
+				mc.getSoundHandler().stopSound(sound);
 				playing = false;
 			}
 			
