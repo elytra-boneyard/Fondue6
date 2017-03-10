@@ -5,5 +5,17 @@
 			"fondue:sizzle"
 		],
 		"subtitle": "subtitles.fondue.sizzle"
+	},
+	"pulsating": {
+		"category": "ambient",
+		"sounds": [
+			"fondue:pulsating"
+		]
+	},
+	"attune": {
+		"category": "player",
+		"sounds": [
+			"fondue:attune"
+		]
 	}
 }

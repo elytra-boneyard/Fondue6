@@ -6,7 +6,8 @@
   "userFiles" : {
     "include" : [
       "options.txt",
-      "optionsshaders.txt"
+      "optionsshaders.txt",
+      "config/fruitphone.cfg"
     ],
     "exclude" : [ ]
   },

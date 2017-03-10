@@ -99,7 +99,7 @@ minecraft {
 
 	runDir = "minecraft"
 
-	replaceIn 'src/main/java/com/elytradev/fondue/FondueMod.java'
+	replaceIn 'src/main/java/com/elytradev/fondue/Fondue.java'
 	replace '@VERSION@', project.version
 }
 
