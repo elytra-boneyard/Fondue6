@@ -39,15 +39,28 @@ public class BlockChair extends Block {
 	}
 	
 	@Override
+	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+		super.breakBlock(worldIn, pos, state);
+		List<EntityArmorStand> armorStands = worldIn.getEntitiesWithinAABB(EntityArmorStand.class, state.getBoundingBox(worldIn, pos).offset(pos));
+		for (EntityArmorStand eas : armorStands) {
+			if (eas.getName().equals("fondue:chair")) {
+				eas.setDead();
+			}
+		}
+	}
+	
+	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (!worldIn.isRemote) {
 			if (!worldIn.provider.isSurfaceWorld()) {
 				playerIn.sendMessage(new TextComponentTranslation("fondue.tooDangerous"));
 				return true;
 			}
-			List<EntityArmorStand> armorStands = worldIn.getEntitiesWithinAABB(EntityArmorStand.class, state.getBoundingBox(worldIn, pos));
+			List<EntityArmorStand> armorStands = worldIn.getEntitiesWithinAABB(EntityArmorStand.class, state.getBoundingBox(worldIn, pos).offset(pos));
 			for (EntityArmorStand eas : armorStands) {
-				eas.setDead();
+				if (eas.getName().equals("fondue:chair")) {
+					eas.setDead();
+				}
 			}
 			// Welcome back, SethBling here
 			EntityArmorStand eas = new EntityArmorStand(worldIn, pos.getX()+0.5, pos.getY()-1.15, pos.getZ()+0.5);
