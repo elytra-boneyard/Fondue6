@@ -56,7 +56,6 @@ public class BlockObelisk extends Block {
 				controller.setY(controller.getY()-1);
 				te = worldIn.getTileEntity(controller);
 			}
-			System.out.println(controller.getY());
 			Fondue.getModule(ModuleObeliskClient.class).spark((TileEntityObelisk)te);
 		}
 		return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
