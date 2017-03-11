@@ -51,6 +51,7 @@ public class Fondue {
 				log.info("Discovered {}module {}", clazz.getSuperclass() == ModuleClient.class ? "client " : "", clazz.getSimpleName().replace("Module", ""));
 			}
 		}
+		log.info("Disabling modules is not officially supported. If you really want to disable one, open the Fondue mod jar and delete the module class.");
 		Collections.sort(modules, (a, b) -> Ints.compare(a.getWeight(), b.getWeight()));
 		ProgressManager.pop(bar);
 	}

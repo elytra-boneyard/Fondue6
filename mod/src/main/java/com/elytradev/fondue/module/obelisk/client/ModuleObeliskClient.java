@@ -106,7 +106,7 @@ public class ModuleObeliskClient extends ModuleClient {
 				mc.getSoundHandler().stopSound(sound);
 			}
 			
-			if (dist > 0 && dist < 5) {
+			if (dist >= 0 && dist < 5) {
 				float t = RenderObelisk.getTime(teo, e.getPartialTicks());
 				
 				float sin = (MathHelper.sin(t)+2)/3;
