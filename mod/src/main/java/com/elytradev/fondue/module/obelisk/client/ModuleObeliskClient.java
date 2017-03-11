@@ -97,13 +97,17 @@ public class ModuleObeliskClient extends ModuleClient {
 					dist = (float)a.distanceTo(b);
 					sound.setPosition(te.getPos());
 					if (!mc.getSoundHandler().isSoundPlaying(sound)) {
-						mc.getSoundHandler().playSound(sound);
+						try {
+							mc.getSoundHandler().playSound(sound);
+						} catch (Throwable t) {}
 					}
 				}
 			}
 			
 			if (teo == null && mc.getSoundHandler().isSoundPlaying(sound)) {
-				mc.getSoundHandler().stopSound(sound);
+				try {
+					mc.getSoundHandler().stopSound(sound);
+				} catch (Throwable t) {}
 			}
 			
 			if (dist >= 0 && dist < 5) {
