@@ -1,10 +1,14 @@
 package com.elytradev.fondue.module.obelisk.client;
 
+import java.util.Set;
+
 import org.lwjgl.opengl.GL11;
 
+import com.elytradev.fondue.Goal;
 import com.elytradev.fondue.module.ModuleClient;
 import com.elytradev.fondue.module.obelisk.ModuleObelisk;
 import com.elytradev.fondue.module.obelisk.TileEntityObelisk;
+import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,18 +30,32 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ModuleObeliskClient extends ModuleClient {
 
+	@Override
+	public String getName() {
+		return "Obelisk (Client)";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Client-side tweaks for the Obelisk module.";
+	}
+	
+	@Override
+	public Set<Goal> getGoals() {
+		return ImmutableSet.of();
+	}
+	
 	private static final ResourceLocation VIGNETTE = new ResourceLocation("fondue", "textures/misc/vignette.png");
 	
 	private ObeliskSound sound;
-	private boolean playing = false;
 	
 	@Override
-	public void onInit(FMLInitializationEvent e) {
+	public void onPreInit(FMLPreInitializationEvent e) {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityObelisk.class, new RenderObelisk());
 		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 1, 1);
 		
@@ -70,16 +88,14 @@ public class ModuleObeliskClient extends ModuleClient {
 					Vec3d b = new Vec3d(te.getPos().getX()+0.5, a.yCoord, te.getPos().getZ()+0.5);
 					dist = (float)a.distanceTo(b);
 					sound.setPosition(te.getPos());
-					if (!playing) {
+					if (!mc.getSoundHandler().isSoundPlaying(sound)) {
 						mc.getSoundHandler().playSound(sound);
-						playing = true;
 					}
 				}
 			}
 			
-			if (teo == null && playing) {
+			if (teo == null && mc.getSoundHandler().isSoundPlaying(sound)) {
 				mc.getSoundHandler().stopSound(sound);
-				playing = false;
 			}
 			
 			if (dist > 0 && dist < 5) {

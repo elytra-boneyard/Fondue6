@@ -1,7 +1,12 @@
 package com.elytradev.fondue.module.obelisk;
 
+import java.util.Set;
+
 import com.elytradev.fondue.Cardinal;
+import com.elytradev.fondue.Goal;
 import com.elytradev.fondue.module.Module;
+import com.google.common.collect.ImmutableSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -24,6 +29,21 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModuleObelisk extends Module {
 
+	@Override
+	public String getName() {
+		return "Obelisk";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Disables beds, and adds periodically generating Obelisks to the world which can be used to set your spawn.";
+	}
+	
+	@Override
+	public Set<Goal> getGoals() {
+		return ImmutableSet.of(Goal.ENCOURAGE_EXPLORATION, Goal.BE_UNIQUE);
+	}
+	
 	public static Block OBELISK_BLOCK;
 	public static SoundEvent PULSATING;
 	public static SoundEvent ATTUNE;
@@ -112,4 +132,5 @@ public class ModuleObelisk extends Module {
 		e.getWorld().getGameRules().addGameRule("spawnRadius", "0", ValueType.NUMERICAL_VALUE);
 		e.setCanceled(true);
 	}
+	
 }

@@ -1,12 +1,15 @@
 package com.elytradev.fondue.module.yawfix;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import com.elytradev.fondue.Fondue;
+import com.elytradev.fondue.Goal;
 import com.elytradev.fondue.module.Module;
+import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,6 +21,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
 public class ModuleYawFix extends Module {
 
+	@Override
+	public String getName() {
+		return "Yaw Fix";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Fixes a vanilla bug introduced in 1.2 that removed the directional damage effect.";
+	}
+	
+	@Override
+	public Set<Goal> getGoals() {
+		return ImmutableSet.of(Goal.IMPROVE_VANILLA);
+	}
+	
 	public static final float EPSILON = 0.05f;
 	
 	private Map<EntityPlayer, MutableFloat> lastAttackedAtYaw = new WeakHashMap<>();
@@ -40,6 +58,6 @@ public class ModuleYawFix extends Module {
 				lastAttackedAtYaw.get(e.player).setValue(e.player.attackedAtYaw);
 			}
 		}
-}
+	}
 	
 }

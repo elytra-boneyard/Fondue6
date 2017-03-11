@@ -1,9 +1,12 @@
 package com.elytradev.fondue.module.nodebug;
 
 import java.util.List;
+import java.util.Set;
 
 import com.elytradev.fondue.Fondue;
+import com.elytradev.fondue.Goal;
 import com.elytradev.fondue.module.ModuleClient;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
@@ -17,6 +20,21 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ModuleNoDebug extends ModuleClient {
 
+	@Override
+	public String getName() {
+		return "No Debug";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Replaces the F3 menu with a less informative and more attractive menu in Survival mode.";
+	}
+	
+	@Override
+	public Set<Goal> getGoals() {
+		return ImmutableSet.of(Goal.ENCOURAGE_INFRASTRUCTURE, Goal.BE_UNIQUE);
+	}
+	
 	private List<String> left = Lists.newArrayList();
 	private List<String> center = Lists.newArrayList();
 	private List<String> right = Lists.newArrayList();

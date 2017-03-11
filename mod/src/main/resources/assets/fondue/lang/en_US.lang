@@ -1,8 +1,15 @@
+tile.fondue.chair.name=Comfy Chair
+
 death.attack.fondue.sizzle=%1$s couldn't stop sizzling
 
 subtitles.fondue.sizzle=Flesh sizzles
 
 effect.fondue.pale=Pale
+effect.fondue.resurrection_sickness=Rez Sickness
 
 fondue.bedsAreDisabled=§6§lDisabled. §rCrafting ingredient only.
 fondue.findObelisks=Find Obelisks in the world to set your spawn.
+
+fondue.startLounging=%s is now lounging. (%d%%)
+
+fondue.tooDangerous=It's too dangerous to lounge here!

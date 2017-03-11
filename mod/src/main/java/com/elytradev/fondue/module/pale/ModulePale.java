@@ -1,6 +1,10 @@
 package com.elytradev.fondue.module.pale;
 
+import java.util.Set;
+
+import com.elytradev.fondue.Goal;
 import com.elytradev.fondue.module.Module;
+import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,6 +26,21 @@ import net.minecraftforge.fml.common.registry.GameRegistry.Type;
 
 public class ModulePale extends Module {
 
+	@Override
+	public String getName() {
+		return "Pale";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Adds a new potion effect, Pale, and replaces Rotten Flesh's Hunger effect with it. Pale gives you a vulnerability to sunlight, weakness to arthropods, and resistance to undead.";
+	}
+	
+	@Override
+	public Set<Goal> getGoals() {
+		return ImmutableSet.of(Goal.IMPROVE_VANILLA, Goal.BE_UNIQUE);
+	}
+	
 	public static Potion PALE;
 	public static SoundEvent SIZZLE;
 	

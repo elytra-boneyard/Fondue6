@@ -18,8 +18,6 @@ public class GenerateObelisk {
 	public static void generate(int chunkX, int chunkZ, long worldSeed, ChunkPrimer c) {
 		if (isObeliskChunk(worldSeed, chunkX, chunkZ)) {
 			int y = c.findGroundBlockIdx(8, 8) - 1;
-			System.out.println("Generating an obelisk at "+((chunkX*16)+8)+", "+y+", "+((chunkZ*16)+8));
-			
 			IBlockState bs = ModuleObelisk.OBELISK_BLOCK.getDefaultState().withProperty(BlockObelisk.CONTROLLER, false);
 			
 			c.setBlockState(7, y+0, 6, bs);
@@ -63,7 +61,6 @@ public class GenerateObelisk {
 				if (w.getBlockState(pos).getBlock() == ModuleObelisk.OBELISK_BLOCK) {
 					y++;
 					pos.setY(y);
-					System.out.println("Capping off an obelisk at "+x+", "+y+", "+z);
 					w.setBlockState(pos, ModuleObelisk.OBELISK_BLOCK.getDefaultState().withProperty(BlockObelisk.CONTROLLER, true));
 					break;
 				}

@@ -1,6 +1,7 @@
 package com.elytradev.fondue;
 
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import com.elytradev.concrete.NetworkContext;
 import com.elytradev.fondue.module.Module;
 import com.elytradev.fondue.module.ModuleClient;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
@@ -49,6 +51,7 @@ public class Fondue {
 				log.info("Discovered {}module {}", clazz.getSuperclass() == ModuleClient.class ? "client " : "", clazz.getSimpleName().replace("Module", ""));
 			}
 		}
+		Collections.sort(modules, (a, b) -> Ints.compare(a.getWeight(), b.getWeight()));
 		ProgressManager.pop(bar);
 	}
 	

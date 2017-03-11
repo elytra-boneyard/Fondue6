@@ -9,7 +9,10 @@
 	"pulsating": {
 		"category": "ambient",
 		"sounds": [
-			"fondue:pulsating"
+			{
+				"name": "fondue:pulsating",
+				"stream": true
+			}
 		]
 	},
 	"attune": {

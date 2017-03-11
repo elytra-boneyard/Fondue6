@@ -1,6 +1,10 @@
 package com.elytradev.fondue.module.instantpickup;
 
+import java.util.Set;
+
+import com.elytradev.fondue.Goal;
 import com.elytradev.fondue.module.Module;
+import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -14,6 +18,21 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ModuleInstantPickup extends Module {
 
+	@Override
+	public String getName() {
+		return "Instant Pickup";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Makes you instantly pick up the drops of blocks you break if you have inventory room.";
+	}
+	
+	@Override
+	public Set<Goal> getGoals() {
+		return ImmutableSet.of(Goal.IMPROVE_VANILLA);
+	}
+	
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
 		MinecraftForge.EVENT_BUS.register(this);
