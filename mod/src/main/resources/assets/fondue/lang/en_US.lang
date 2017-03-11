@@ -1,5 +1,8 @@
 tile.fondue.chair.name=Comfy Chair
 
+item.fondue.dyed_diamond_sword=Dyemond Sword
+item.fondue.dyed_diamond_pickaxe=Dyemond Pickaxe
+
 death.attack.fondue.sizzle=%1$s couldn't stop sizzling
 
 subtitles.fondue.sizzle=Flesh sizzles

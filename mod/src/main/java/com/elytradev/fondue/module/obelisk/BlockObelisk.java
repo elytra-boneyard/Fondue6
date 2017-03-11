@@ -1,5 +1,8 @@
 package com.elytradev.fondue.module.obelisk;
 
+import com.elytradev.fondue.Fondue;
+import com.elytradev.fondue.module.obelisk.client.ModuleObeliskClient;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -11,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 
 public class BlockObelisk extends Block {
@@ -34,6 +38,28 @@ public class BlockObelisk extends Block {
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, CONTROLLER);
+	}
+	
+	@Override
+	public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
+		if (worldIn.isRemote && Fondue.isModuleLoaded(ModuleObeliskClient.class)) {
+			int x = ((pos.getX()/16)*16);
+			int z = ((pos.getZ()/16)*16);
+			if (x < 0) x -= 8;
+			else x += 8;
+			if (z < 0) z -= 8;
+			else z += 8;
+			MutableBlockPos controller = new MutableBlockPos(x, worldIn.getHeight(x, z), z);
+			TileEntity te = worldIn.getTileEntity(controller);
+			while (!(te instanceof TileEntityObelisk)) {
+				if (controller.getY() <= 0) return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+				controller.setY(controller.getY()-1);
+				te = worldIn.getTileEntity(controller);
+			}
+			System.out.println(controller.getY());
+			Fondue.getModule(ModuleObeliskClient.class).spark((TileEntityObelisk)te);
+		}
+		return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
 	}
 	
 	@Override

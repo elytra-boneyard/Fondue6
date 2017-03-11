@@ -1,5 +1,7 @@
 package com.elytradev.fondue.module.obelisk.client;
 
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11;
 
 import com.elytradev.fondue.module.obelisk.TileEntityObelisk;
@@ -25,6 +27,28 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		return ((l%24000)+partialTicks)/20f;
 	}
 	
+	public static long getSeed(TileEntityObelisk te) {
+		long l = 31;
+		l += (31L * te.getPos().getX());
+		l += (31L * te.getPos().getY());
+		l += (31L * te.getPos().getZ());
+		return l;
+	}
+	
+	public static float selectColor(Random rand, float sin, float cos) {
+		switch (rand.nextInt(6)) {
+			case 0: return 0;
+			case 1: return sin;
+			case 2: return cos;
+			case 3: return sin/2;
+			case 4: return cos/2;
+			case 5: return 0.5f;
+		}
+		return 0;
+	}
+	
+	private Random rand = new Random();
+	
 	@Override
 	public void renderTileEntityAt(TileEntityObelisk te, double x, double y, double z, float partialTicks, int destroyStage) {
 		super.renderTileEntityAt(te, x, y, z, partialTicks, destroyStage);
@@ -34,23 +58,13 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		float sin = (MathHelper.sin(t)+2)/3;
 		float cos = (MathHelper.cos(t)+2)/3;
 		
-		boolean attuned = false;
-		
 		double distSq = (x*x)+(y*y)+(z*z);
 		
-		float r;
-		float g;
-		float b;
+		rand.setSeed(getSeed(te));
+		float r = selectColor(rand, sin, cos);
+		float g = selectColor(rand, sin, cos);
+		float b = selectColor(rand, sin, cos);
 		
-		if (attuned) {
-			r = sin;
-			g = cos;
-			b = 0;
-		} else {
-			r = 0;
-			g = cos;
-			b = cos;
-		}
 		
 		GlStateManager.color(r, g, b);
 		
@@ -221,10 +235,10 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(0, 1.01, 0).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMinV()).endVertex();
-		vb.pos(0, 1.01, 1).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMaxV()).endVertex();
-		vb.pos(1, 1.01, 1).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMaxV()).endVertex();
-		vb.pos(1, 1.01, 0).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMinV()).endVertex();
+		vb.pos(0, 1.01, 0).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMinV()).endVertex();
+		vb.pos(0, 1.01, 1).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1.01, 1).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1.01, 0).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMinV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
 		
@@ -252,5 +266,5 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		GlStateManager.enableAlpha();
 		GlStateManager.disableBlend();
 	}
-	
+
 }

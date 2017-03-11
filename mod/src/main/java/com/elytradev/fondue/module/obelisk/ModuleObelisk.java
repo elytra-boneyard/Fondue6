@@ -41,7 +41,7 @@ public class ModuleObelisk extends Module {
 	
 	@Override
 	public Set<Goal> getGoals() {
-		return ImmutableSet.of(Goal.ENCOURAGE_EXPLORATION, Goal.BE_UNIQUE);
+		return ImmutableSet.of(Goal.ENCOURAGE_INFRASTRUCTURE, Goal.BE_UNIQUE);
 	}
 	
 	public static Block OBELISK_BLOCK;

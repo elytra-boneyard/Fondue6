@@ -1,5 +1,6 @@
 package com.elytradev.fondue.module.obelisk.client;
 
+import java.util.Random;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
@@ -11,6 +12,8 @@ import com.elytradev.fondue.module.obelisk.TileEntityObelisk;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleRedstone;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
@@ -23,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -54,6 +58,31 @@ public class ModuleObeliskClient extends ModuleClient {
 	private static final ResourceLocation VIGNETTE = new ResourceLocation("fondue", "textures/misc/vignette.png");
 	
 	private ObeliskSound sound;
+	private Random rand = new Random();
+	
+	public void spark(TileEntityObelisk teo) {
+		Minecraft mc = Minecraft.getMinecraft();
+		RayTraceResult rtr = mc.objectMouseOver;
+		double x = rtr == null ? teo.getPos().getX()+0.5 : rtr.hitVec.xCoord;
+		double y = rtr == null ? teo.getPos().getY()+0.5 : rtr.hitVec.yCoord;
+		double z = rtr == null ? teo.getPos().getZ()+0.5 : rtr.hitVec.zCoord;
+		
+		float t = RenderObelisk.getTime(teo, 0);
+		
+		float sin = (MathHelper.sin(t)+2)/3;
+		float cos = (MathHelper.cos(t)+2)/3;
+		
+		rand.setSeed(RenderObelisk.getSeed(teo));
+		float r = RenderObelisk.selectColor(rand, sin, cos);
+		float g = RenderObelisk.selectColor(rand, sin, cos);
+		float b = RenderObelisk.selectColor(rand, sin, cos);
+		
+		for (int i = 0; i < 2; i++) {
+			Particle effect = new ParticleRedstone(mc.world, x+((mc.world.rand.nextFloat()-0.5f)/2f), y+((mc.world.rand.nextFloat()-0.5f)/2f), z+((mc.world.rand.nextFloat()-0.5f)/2f), 0, 0, 0) {};
+			effect.setRBGColorF(r, g, b);
+			Minecraft.getMinecraft().effectRenderer.addEffect(effect);
+		}
+	}
 	
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -111,20 +140,24 @@ public class ModuleObeliskClient extends ModuleClient {
 			}
 			
 			if (dist >= 0 && dist < 5) {
+				dist -= 1;
+				if (dist < 0) dist = 0;
+				
 				float t = RenderObelisk.getTime(teo, e.getPartialTicks());
 				
 				float sin = (MathHelper.sin(t)+2)/3;
 				float cos = (MathHelper.cos(t)+2)/3;
+				
+				rand.setSeed(RenderObelisk.getSeed(teo));
+				float r = RenderObelisk.selectColor(rand, sin, cos);
+				float g = RenderObelisk.selectColor(rand, sin, cos);
+				float b = RenderObelisk.selectColor(rand, sin, cos);
 				
 				mc.entityRenderer.setupOverlayRendering();
 				GlStateManager.enableBlend();
 				GlStateManager.depthMask(false);
 				GlStateManager.tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA,
 						SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-				
-				float r = 0;
-				float g = cos;
-				float b = cos;
 				
 				float a = 1-((dist-1)/4f);
 				
@@ -148,5 +181,5 @@ public class ModuleObeliskClient extends ModuleClient {
 			}
 		}
 	}
-	
+
 }

@@ -37,6 +37,22 @@ public class Fondue {
 	public final List<Module> modules = Lists.newArrayList();
 	public NetworkContext network;
 	
+	public static boolean isModuleLoaded(Class<? extends Module> clazz) {
+		for (Module m : inst.modules) {
+			if (m.getClass().isAssignableFrom(clazz)) return true;
+		}
+		return false;
+	}
+	
+	public static <T extends Module> T getModule(Class<T> clazz) {
+		for (Module m : inst.modules) {
+			if (m.getClass().isAssignableFrom(clazz)) {
+				return (T)m;
+			}
+		}
+		return null;
+	}
+	
 	@EventHandler
 	public void onConstructing(FMLConstructionEvent e) throws Exception {
 		Set<ClassInfo> info = ClassPath.from(getClass().getClassLoader()).getTopLevelClassesRecursive("com.elytradev.fondue.module");

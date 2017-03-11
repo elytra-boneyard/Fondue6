@@ -7,6 +7,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
@@ -20,37 +21,59 @@ public class GenerateObelisk {
 			int y = c.findGroundBlockIdx(8, 8) - 1;
 			IBlockState bs = ModuleObelisk.OBELISK_BLOCK.getDefaultState().withProperty(BlockObelisk.CONTROLLER, false);
 			
-			c.setBlockState(7, y+0, 6, bs);
-			c.setBlockState(8, y+0, 6, bs);
-			c.setBlockState(9, y+0, 6, bs);
+			generateBase(c, y, bs, true);
 			
-			c.setBlockState(6, y+0, 7, bs);
-			c.setBlockState(7, y+0, 7, bs);
-			c.setBlockState(8, y+0, 7, bs);
-			c.setBlockState(9, y+0, 7, bs);
-			c.setBlockState(10, y+0, 7, bs);
-			
-			c.setBlockState(6, y+0, 8, bs);
-			c.setBlockState(7, y+0, 8, bs);
-			c.setBlockState(8, y+0, 8, bs);
-			c.setBlockState(9, y+0, 8, bs);
-			c.setBlockState(10, y+0, 8, bs);
-			
-			c.setBlockState(6, y+0, 9, bs);
-			c.setBlockState(7, y+0, 9, bs);
-			c.setBlockState(8, y+0, 9, bs);
-			c.setBlockState(9, y+0, 9, bs);
-			c.setBlockState(10, y+0, 9, bs);
-			
-			c.setBlockState(7, y+0, 10, bs);
-			c.setBlockState(8, y+0, 10, bs);
-			c.setBlockState(9, y+0, 10, bs);
+			int cur = y - 1;
+			while (cur > 0) {
+				generateBase(c, cur, bs, true);
+				cur--;
+			}
 			
 			c.setBlockState(8, y+1, 8, bs);
 			c.setBlockState(8, y+2, 8, bs);
 		}
 	}
 	
+	private static boolean generateBase(ChunkPrimer c, int y, IBlockState bs, boolean overwrite) {
+		boolean result = false;
+		
+		result |= setBlockState(c, 7, y+0, 6, bs, overwrite);
+		result |= setBlockState(c, 8, y+0, 6, bs, overwrite);
+		result |= setBlockState(c, 9, y+0, 6, bs, overwrite);
+		
+		result |= setBlockState(c, 6, y+0, 7, bs, overwrite);
+		result |= setBlockState(c, 7, y+0, 7, bs, overwrite);
+		result |= setBlockState(c, 8, y+0, 7, bs, overwrite);
+		result |= setBlockState(c, 9, y+0, 7, bs, overwrite);
+		result |= setBlockState(c, 10, y+0, 7, bs, overwrite);
+		
+		result |= setBlockState(c, 6, y+0, 8, bs, overwrite);
+		result |= setBlockState(c, 7, y+0, 8, bs, overwrite);
+		result |= setBlockState(c, 8, y+0, 8, bs, overwrite);
+		result |= setBlockState(c, 9, y+0, 8, bs, overwrite);
+		result |= setBlockState(c, 10, y+0, 8, bs, overwrite);
+		
+		result |= setBlockState(c, 6, y+0, 9, bs, overwrite);
+		result |= setBlockState(c, 7, y+0, 9, bs, overwrite);
+		result |= setBlockState(c, 8, y+0, 9, bs, overwrite);
+		result |= setBlockState(c, 9, y+0, 9, bs, overwrite);
+		result |= setBlockState(c, 10, y+0, 9, bs, overwrite);
+		
+		result |= setBlockState(c, 7, y+0, 10, bs, overwrite);
+		result |= setBlockState(c, 8, y+0, 10, bs, overwrite);
+		result |= setBlockState(c, 9, y+0, 10, bs, overwrite);
+		
+		return result;
+	}
+
+	private static boolean setBlockState(ChunkPrimer c, int x, int y, int z, IBlockState bs, boolean overwrite) {
+		if (!overwrite) {
+			if (c.getBlockState(x, y, z).getBlock() != Blocks.AIR) return false;
+		}
+		c.setBlockState(x, y, z, bs);
+		return true;
+	}
+
 	public static void populate(int chunkX, int chunkZ, long worldSeed, World w) {
 		if (isObeliskChunk(worldSeed, chunkX, chunkZ)) {
 			int x = ((chunkX*16)+8);
@@ -119,7 +142,7 @@ public class GenerateObelisk {
 	
 	// Generate a bunch of obelisk maps for a number of world seeds, for debugging.
 	public static void main(String[] args) throws Exception {
-		for (int seed = 0; seed < 12000; seed += 100) {
+		for (int seed = 0; seed < 12000; seed += 1000) {
 			BufferedImage bi = new BufferedImage(REGION_SIZE*11, REGION_SIZE*11, BufferedImage.TYPE_INT_ARGB);
 			for (int x = 0; x < REGION_SIZE*11; x++) {
 				for (int z = 0; z < REGION_SIZE*11; z++) {
