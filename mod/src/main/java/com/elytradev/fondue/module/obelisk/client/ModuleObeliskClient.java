@@ -116,6 +116,8 @@ public class ModuleObeliskClient extends ModuleClient {
 				
 				float a = 1-((dist-1)/4f);
 				
+				a /= 2;
+				
 				GlStateManager.color(r, g, b, a);
 				mc.getTextureManager().bindTexture(VIGNETTE);
 				Tessellator tessellator = Tessellator.getInstance();
