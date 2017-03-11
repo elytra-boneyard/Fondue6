@@ -66,8 +66,6 @@ public class BlockChair extends Block {
 					break;
 				default: break;
 			}
-			playerIn.rotationYawHead = playerIn.rotationYaw = eas.rotationYaw;
-			playerIn.rotationPitch = 0;
 			eas.setInvisible(true);
 			eas.setNoGravity(true);
 			eas.setCustomNameTag("fondue:chair");
