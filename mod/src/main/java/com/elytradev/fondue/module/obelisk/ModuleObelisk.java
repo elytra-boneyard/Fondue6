@@ -66,6 +66,13 @@ public class ModuleObelisk extends Module {
 	}
 	
 	@SubscribeEvent
+	public void onBreak(BlockEvent.BreakEvent e) {
+		if (e.getState().getBlock() == OBELISK_BLOCK) {
+			e.setCanceled(true);
+		}
+	}
+	
+	@SubscribeEvent
 	public void onPlace(BlockEvent.PlaceEvent e) {
 		if (e.getPlacedBlock().getBlock() == Blocks.BED) {
 			e.setCanceled(true);
