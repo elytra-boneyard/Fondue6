@@ -26,7 +26,7 @@ public class ModuleChair extends Module {
 	
 	@Override
 	public String getDescription() {
-		return "Adds a Comfy Chair, which lets you skip the night if everyone online sits in one. Since you can still do things while sitting in it, it obsoletes mods like Morpheus.";
+		return "Adds a Comfy Chair, which lets you toggle day/night if everyone online sits in one. Since you can still do things while sitting in it, it obsoletes mods like Morpheus.";
 	}
 	
 	@Override
