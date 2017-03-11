@@ -57,7 +57,7 @@ public class ModuleObeliskClient extends ModuleClient {
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityObelisk.class, new RenderObelisk());
-		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 1, 1);
+		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 0.35f, 0.75f);
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}
