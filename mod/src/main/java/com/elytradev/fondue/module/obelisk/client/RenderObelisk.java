@@ -4,23 +4,21 @@ import org.lwjgl.opengl.GL11;
 
 import com.elytradev.fondue.module.obelisk.TileEntityObelisk;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
 public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> {
 
-	private static final ResourceLocation FLOOR_GLOWMAP = new ResourceLocation("fondue", "textures/blocks/obelisk_floor_glowmap.png");
-	private static final ResourceLocation TOTEM_GLOWMAP = new ResourceLocation("fondue", "textures/blocks/totem_glowmap.png");
-	private static final ResourceLocation TOTEM_TOP_GLOWMAP = new ResourceLocation("fondue", "textures/blocks/totem_top_glowmap.png");
-	
 	public static float getTime(TileEntityObelisk te, float partialTicks) {
 		long l = te.getWorld().getTotalWorldTime();
 		l += te.hashCode();
@@ -49,8 +47,8 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 			g = cos;
 			b = 0;
 		} else {
-			r = sin;
-			g = 0;
+			r = 0;
+			g = cos;
 			b = cos;
 		}
 		
@@ -80,16 +78,21 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		}
 		GlStateManager.depthMask(false);
 		
+		TextureAtlasSprite floorGlowmap = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("fondue:blocks/obelisk_floor_glowmap");
+		TextureAtlasSprite totemGlowmap = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("fondue:blocks/totem_glowmap");
+		TextureAtlasSprite totemTopGlowmap = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("fondue:blocks/totem_top_glowmap");
+		
 		Tessellator tess = Tessellator.getInstance();
 		VertexBuffer vb = tess.getBuffer();
 		
-		bindTexture(FLOOR_GLOWMAP);
+		bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(-2, -1.99, -2).tex(0, 0).endVertex();
-		vb.pos(-2, -1.99,  3).tex(0, 1).endVertex();
-		vb.pos( 3, -1.99,  3).tex(1, 1).endVertex();
-		vb.pos( 3, -1.99, -2).tex(1, 0).endVertex();
+		vb.pos(-2, -1.99, -2).tex(floorGlowmap.getMinU(), floorGlowmap.getMinV()).endVertex();
+		vb.pos(-2, -1.99,  3).tex(floorGlowmap.getMinU(), floorGlowmap.getMaxV()).endVertex();
+		vb.pos( 3, -1.99,  3).tex(floorGlowmap.getMaxU(), floorGlowmap.getMaxV()).endVertex();
+		vb.pos( 3, -1.99, -2).tex(floorGlowmap.getMaxU(), floorGlowmap.getMinV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
 		
@@ -99,23 +102,22 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 				GlStateManager.color(r, g, b, a);
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 				vb.setTranslation(x, y, z);
-				vb.pos(-2+xOfs*f, -1.99+yOfs*f, -2+zOfs*f).tex(0, 0).endVertex();
-				vb.pos(-2+xOfs*f, -1.99+yOfs*f,  3+zOfs*f).tex(0, 1).endVertex();
-				vb.pos( 3+xOfs*f, -1.99+yOfs*f,  3+zOfs*f).tex(1, 1).endVertex();
-				vb.pos( 3+xOfs*f, -1.99+yOfs*f, -2+zOfs*f).tex(1, 0).endVertex();
+				vb.pos(-2+xOfs*f, -1.99+yOfs*f, -2+zOfs*f).tex(floorGlowmap.getMinU(), floorGlowmap.getMinV()).endVertex();
+				vb.pos(-2+xOfs*f, -1.99+yOfs*f,  3+zOfs*f).tex(floorGlowmap.getMinU(), floorGlowmap.getMaxV()).endVertex();
+				vb.pos( 3+xOfs*f, -1.99+yOfs*f,  3+zOfs*f).tex(floorGlowmap.getMaxU(), floorGlowmap.getMaxV()).endVertex();
+				vb.pos( 3+xOfs*f, -1.99+yOfs*f, -2+zOfs*f).tex(floorGlowmap.getMaxU(), floorGlowmap.getMinV()).endVertex();
 				vb.setTranslation(0, 0, 0);
 				tess.draw();
 				GlStateManager.color(r, g, b);
 			}
 		}
 		
-		bindTexture(TOTEM_GLOWMAP);
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(0,  1, 1.01).tex(0, 0).endVertex();
-		vb.pos(0, -2, 1.01).tex(0, 1).endVertex();
-		vb.pos(1, -2, 1.01).tex(1, 1).endVertex();
-		vb.pos(1,  1, 1.01).tex(1, 0).endVertex();
+		vb.pos(-1,  1, 1.01).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
+		vb.pos(-1, -2, 1.01).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(2, -2, 1.01).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(2,  1, 1.01).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
 		
@@ -126,36 +128,10 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 				GlStateManager.color(r, g, b, a);
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 				vb.setTranslation(x, y, z);
-				vb.pos(0+xOfs*f,  1+zOfs*f, 1.01+yOfs*f).tex(0, 0).endVertex();
-				vb.pos(0+xOfs*f, -2+zOfs*f, 1.01+yOfs*f).tex(0, 1).endVertex();
-				vb.pos(1+xOfs*f, -2+zOfs*f, 1.01+yOfs*f).tex(1, 1).endVertex();
-				vb.pos(1+xOfs*f,  1+zOfs*f, 1.01+yOfs*f).tex(1, 0).endVertex();
-				vb.setTranslation(0, 0, 0);
-				tess.draw();
-				GlStateManager.color(r, g, b);
-			}
-			GlStateManager.depthMask(true);
-		}
-		
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		vb.setTranslation(x, y, z);
-		vb.pos(1,  1, -0.01).tex(1, 0).endVertex();
-		vb.pos(1, -2, -0.01).tex(1, 1).endVertex();
-		vb.pos(0, -2, -0.01).tex(0, 1).endVertex();
-		vb.pos(0,  1, -0.01).tex(0, 0).endVertex();
-		vb.setTranslation(0, 0, 0);
-		tess.draw();
-		if (transpose) {
-			GlStateManager.depthMask(false);
-			for (int i = 0; i < res; i++) {
-				float f = i/(float)res;
-				GlStateManager.color(r, g, b, a);
-				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-				vb.setTranslation(x, y, z);
-				vb.pos(1+xOfs*f,  1+zOfs*f, -0.01-yOfs*f).tex(1, 0).endVertex();
-				vb.pos(1+xOfs*f, -2+zOfs*f, -0.01-yOfs*f).tex(1, 1).endVertex();
-				vb.pos(0+xOfs*f, -2+zOfs*f, -0.01-yOfs*f).tex(0, 1).endVertex();
-				vb.pos(0+xOfs*f,  1+zOfs*f, -0.01-yOfs*f).tex(0, 0).endVertex();
+				vb.pos(-1+xOfs*f,  1+zOfs*f, 1.01+yOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
+				vb.pos(-1+xOfs*f, -2+zOfs*f, 1.01+yOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(2+xOfs*f, -2+zOfs*f, 1.01+yOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(2+xOfs*f,  1+zOfs*f, 1.01+yOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
 				vb.setTranslation(0, 0, 0);
 				tess.draw();
 				GlStateManager.color(r, g, b);
@@ -165,13 +141,12 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(-0.01,  1, 0).tex(0, 0).endVertex();
-		vb.pos(-0.01, -2, 0).tex(0, 1).endVertex();
-		vb.pos(-0.01, -2, 1).tex(1, 1).endVertex();
-		vb.pos(-0.01,  1, 1).tex(1, 0).endVertex();
+		vb.pos(2,  1, -0.01).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
+		vb.pos(2, -2, -0.01).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(-1, -2, -0.01).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(-1,  1, -0.01).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
-		
 		if (transpose) {
 			GlStateManager.depthMask(false);
 			for (int i = 0; i < res; i++) {
@@ -179,10 +154,10 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 				GlStateManager.color(r, g, b, a);
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 				vb.setTranslation(x, y, z);
-				vb.pos(-0.01-yOfs*f,  1+xOfs*f, 0+zOfs*f).tex(0, 0).endVertex();
-				vb.pos(-0.01-yOfs*f, -2+xOfs*f, 0+zOfs*f).tex(0, 1).endVertex();
-				vb.pos(-0.01-yOfs*f, -2+xOfs*f, 1+zOfs*f).tex(1, 1).endVertex();
-				vb.pos(-0.01-yOfs*f,  1+xOfs*f, 1+zOfs*f).tex(1, 0).endVertex();
+				vb.pos(2+xOfs*f,  1+zOfs*f, -0.01-yOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
+				vb.pos(2+xOfs*f, -2+zOfs*f, -0.01-yOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(-1+xOfs*f, -2+zOfs*f, -0.01-yOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(-1+xOfs*f,  1+zOfs*f, -0.01-yOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
 				vb.setTranslation(0, 0, 0);
 				tess.draw();
 				GlStateManager.color(r, g, b);
@@ -192,10 +167,10 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(1.01,  1, 1).tex(1, 0).endVertex();
-		vb.pos(1.01, -2, 1).tex(1, 1).endVertex();
-		vb.pos(1.01, -2, 0).tex(0, 1).endVertex();
-		vb.pos(1.01,  1, 0).tex(0, 0).endVertex();
+		vb.pos(-0.01,  1, -1).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
+		vb.pos(-0.01, -2, -1).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(-0.01, -2, 2).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(-0.01,  1, 2).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
 		
@@ -206,10 +181,10 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 				GlStateManager.color(r, g, b, a);
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 				vb.setTranslation(x, y, z);
-				vb.pos(1.01+yOfs*f,  1+xOfs*f, 1+zOfs*f).tex(1, 0).endVertex();
-				vb.pos(1.01+yOfs*f, -2+xOfs*f, 1+zOfs*f).tex(1, 1).endVertex();
-				vb.pos(1.01+yOfs*f, -2+xOfs*f, 0+zOfs*f).tex(0, 1).endVertex();
-				vb.pos(1.01+yOfs*f,  1+xOfs*f, 0+zOfs*f).tex(0, 0).endVertex();
+				vb.pos(-0.01-yOfs*f,  1+xOfs*f, 0+zOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
+				vb.pos(-0.01-yOfs*f, -2+xOfs*f, 0+zOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(-0.01-yOfs*f, -2+xOfs*f, 1+zOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(-0.01-yOfs*f,  1+xOfs*f, 1+zOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
 				vb.setTranslation(0, 0, 0);
 				tess.draw();
 				GlStateManager.color(r, g, b);
@@ -217,13 +192,12 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 			GlStateManager.depthMask(true);
 		}
 		
-		bindTexture(TOTEM_TOP_GLOWMAP);
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(0, 1.01, 0).tex(0, 0).endVertex();
-		vb.pos(0, 1.01, 1).tex(0, 1).endVertex();
-		vb.pos(1, 1.01, 1).tex(1, 1).endVertex();
-		vb.pos(1, 1.01, 0).tex(1, 0).endVertex();
+		vb.pos(1.01,  1, 2).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
+		vb.pos(1.01, -2, 2).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(1.01, -2, -1).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+		vb.pos(1.01,  1, -1).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
 		
@@ -234,10 +208,37 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 				GlStateManager.color(r, g, b, a);
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 				vb.setTranslation(x, y, z);
-				vb.pos(0+xOfs*f, 1.01+yOfs*f, 0+zOfs*f).tex(0, 0).endVertex();
-				vb.pos(0+xOfs*f, 1.01+yOfs*f, 1+zOfs*f).tex(0, 1).endVertex();
-				vb.pos(1+xOfs*f, 1.01+yOfs*f, 1+zOfs*f).tex(1, 1).endVertex();
-				vb.pos(1+xOfs*f, 1.01+yOfs*f, 0+zOfs*f).tex(1, 0).endVertex();
+				vb.pos(1.01+yOfs*f,  1+xOfs*f, 2+zOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMinV()).endVertex();
+				vb.pos(1.01+yOfs*f, -2+xOfs*f, 2+zOfs*f).tex(totemGlowmap.getMaxU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(1.01+yOfs*f, -2+xOfs*f, -1+zOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMaxV()).endVertex();
+				vb.pos(1.01+yOfs*f,  1+xOfs*f, -1+zOfs*f).tex(totemGlowmap.getMinU(), totemGlowmap.getMinV()).endVertex();
+				vb.setTranslation(0, 0, 0);
+				tess.draw();
+				GlStateManager.color(r, g, b);
+			}
+			GlStateManager.depthMask(true);
+		}
+		
+		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		vb.setTranslation(x, y, z);
+		vb.pos(0, 1.01, 0).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMinV()).endVertex();
+		vb.pos(0, 1.01, 1).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1.01, 1).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1.01, 0).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMinV()).endVertex();
+		vb.setTranslation(0, 0, 0);
+		tess.draw();
+		
+		if (transpose) {
+			GlStateManager.depthMask(false);
+			for (int i = 0; i < res; i++) {
+				float f = i/(float)res;
+				GlStateManager.color(r, g, b, a);
+				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+				vb.setTranslation(x, y, z);
+				vb.pos(0+xOfs*f, 1.01+yOfs*f, 0+zOfs*f).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMinV()).endVertex();
+				vb.pos(0+xOfs*f, 1.01+yOfs*f, 1+zOfs*f).tex(totemTopGlowmap.getMaxU(), totemTopGlowmap.getMaxV()).endVertex();
+				vb.pos(1+xOfs*f, 1.01+yOfs*f, 1+zOfs*f).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMaxV()).endVertex();
+				vb.pos(1+xOfs*f, 1.01+yOfs*f, 0+zOfs*f).tex(totemTopGlowmap.getMinU(), totemTopGlowmap.getMinV()).endVertex();
 				vb.setTranslation(0, 0, 0);
 				tess.draw();
 				GlStateManager.color(r, g, b);

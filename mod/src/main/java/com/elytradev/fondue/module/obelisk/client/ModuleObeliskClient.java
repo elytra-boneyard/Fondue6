@@ -26,6 +26,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -60,6 +61,13 @@ public class ModuleObeliskClient extends ModuleClient {
 		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 0.35f, 0.75f);
 		
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@SubscribeEvent
+	public void onStitch(TextureStitchEvent e) {
+		e.getMap().registerSprite(new ResourceLocation("fondue", "blocks/obelisk_floor_glowmap"));
+		e.getMap().registerSprite(new ResourceLocation("fondue", "blocks/totem_glowmap"));
+		e.getMap().registerSprite(new ResourceLocation("fondue", "blocks/totem_top_glowmap"));
 	}
 	
 	@SubscribeEvent
@@ -110,8 +118,8 @@ public class ModuleObeliskClient extends ModuleClient {
 				GlStateManager.tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA,
 						SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 				
-				float r = sin;
-				float g = 0;
+				float r = 0;
+				float g = cos;
 				float b = cos;
 				
 				float a = 1-((dist-1)/4f);
