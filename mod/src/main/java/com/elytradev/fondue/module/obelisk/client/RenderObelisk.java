@@ -101,6 +101,52 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 		
 		bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		
+		if (ModuleObeliskClient.attuning == te && ModuleObeliskClient.attuneTicks < 40) {
+			float prog = (ModuleObeliskClient.attuneTicks+partialTicks)/14f;
+			
+			float minU = totemGlowmap.getInterpolatedU(16/3f);
+			float maxU = totemGlowmap.getInterpolatedU((16/3f)*2);
+			float minV = totemGlowmap.getInterpolatedV(0);
+			float maxV = totemGlowmap.getInterpolatedV(16/3f);
+			
+			float attuneA = 0.15f;
+			
+			if (ModuleObeliskClient.attuneTicks > 20) {
+				attuneA *= 1-(((ModuleObeliskClient.attuneTicks+partialTicks)-20)/20f);
+			}
+			
+			if (attuneA > 0) {
+				GlStateManager.depthMask(false);
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+				GlStateManager.disableAlpha();
+				GlStateManager.color(r, g, b, attuneA);
+				int attuneRes = ModuleObeliskClient.attuneTicks*6;
+				
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y, z);
+				for (int j = 0; j < 4; j++) {
+					for (int i = ModuleObeliskClient.attuneTicks; i < attuneRes-ModuleObeliskClient.attuneTicks; i++) {
+						float f = i/((float)attuneRes);
+						vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+						vb.pos(1+((prog/3f)*f), 1+((prog/3f)*f), -0.01-(prog*f)).tex(maxU, minV).endVertex();
+						vb.pos(1+((prog/3f)*f), 0-((prog/3f)*f), -0.01-(prog*f)).tex(maxU, maxV).endVertex();
+						vb.pos(0-((prog/3f)*f), 0-((prog/3f)*f), -0.01-(prog*f)).tex(minU, maxV).endVertex();
+						vb.pos(0-((prog/3f)*f), 1+((prog/3f)*f), -0.01-(prog*f)).tex(minU, minV).endVertex();
+						vb.setTranslation(0, 0, 0);
+						tess.draw();
+					}
+					GlStateManager.rotate(90f, 0, 1, 0);
+					GlStateManager.translate(-1, 0, 0);
+				}
+				GlStateManager.popMatrix();
+				GlStateManager.color(r, g, b);
+				GlStateManager.depthMask(true);
+				GlStateManager.disableBlend();
+				GlStateManager.enableAlpha();
+			}
+		}
+		
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
 		vb.pos(-2, -1.99, -2).tex(floorGlowmap.getMinU(), floorGlowmap.getMinV()).endVertex();

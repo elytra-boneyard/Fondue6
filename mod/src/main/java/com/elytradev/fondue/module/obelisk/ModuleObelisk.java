@@ -47,17 +47,19 @@ public class ModuleObelisk extends Module {
 	public static Block OBELISK_BLOCK;
 	public static SoundEvent PULSATING;
 	public static SoundEvent ATTUNE;
+	public static SoundEvent HOLLOWHIT;
 	
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
+		GameRegistry.register(PULSATING = new SoundEvent(new ResourceLocation("fondue", "pulsating")).setRegistryName("pulsating"));
+		GameRegistry.register(ATTUNE = new SoundEvent(new ResourceLocation("fondue", "attune")).setRegistryName("attune"));
+		GameRegistry.register(HOLLOWHIT = new SoundEvent(new ResourceLocation("fondue", "hollowhit")).setRegistryName("hollowhit"));
 		GameRegistry.register(OBELISK_BLOCK = new BlockObelisk(Material.ROCK, MapColor.BLACK)
 				.setLightLevel(0.15f)
 				.setBlockUnbreakable()
 				.setResistance(4000000)
 				.setUnlocalizedName("fondue.obelisk_block")
 				.setRegistryName("obelisk_block"));
-		GameRegistry.register(PULSATING = new SoundEvent(new ResourceLocation("fondue", "pulsating")).setRegistryName("pulsating"));
-		GameRegistry.register(ATTUNE = new SoundEvent(new ResourceLocation("fondue", "attune")).setRegistryName("attune"));
 		GameRegistry.registerTileEntity(TileEntityObelisk.class, "fondue:obelisk");
 		
 		

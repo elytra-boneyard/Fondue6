@@ -4,6 +4,7 @@ import com.elytradev.fondue.Fondue;
 import com.elytradev.fondue.module.obelisk.client.ModuleObeliskClient;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -23,6 +24,7 @@ public class BlockObelisk extends Block {
 	
 	public BlockObelisk(Material materialIn, MapColor mapColorIn) {
 		super(materialIn, mapColorIn);
+		setSoundType(new SoundType(1, 1, ModuleObelisk.HOLLOWHIT, ModuleObelisk.HOLLOWHIT, ModuleObelisk.HOLLOWHIT, ModuleObelisk.HOLLOWHIT, ModuleObelisk.HOLLOWHIT));
 	}
 	
 	@Override

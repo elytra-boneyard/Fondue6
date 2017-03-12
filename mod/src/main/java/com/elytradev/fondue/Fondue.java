@@ -63,12 +63,15 @@ public class Fondue {
 			if (Modifier.isAbstract(clazz.getModifiers())) continue;
 			if (clazz.getSuperclass() == Module.class ||
 					(e.getSide().isClient() && clazz.getSuperclass() == ModuleClient.class)) {
-				modules.add((Module)clazz.newInstance());
-				log.info("Discovered {}module {}", clazz.getSuperclass() == ModuleClient.class ? "client " : "", clazz.getSimpleName().replace("Module", ""));
+				Module m = (Module)clazz.newInstance();
+				modules.add(m);
 			}
 		}
-		log.info("Disabling modules is not officially supported. If you really want to disable one, open the Fondue mod jar and delete the module class.");
 		Collections.sort(modules, (a, b) -> Ints.compare(a.getWeight(), b.getWeight()));
+		for (Module m : modules) {
+			log.info("Discovered {}module {}", m instanceof ModuleClient ? "client " : "", m.getName());
+		}
+		log.info("Disabling modules is not officially supported. If you really want to disable one, open the Fondue mod jar and delete the module class.");
 		ProgressManager.pop(bar);
 	}
 	
@@ -77,7 +80,7 @@ public class Fondue {
 		network = NetworkContext.forChannel("fondue");
 		ProgressBar bar = ProgressManager.push("Pre initializing modules", modules.size());
 		for (Module m : modules) {
-			bar.step(m.getClass().getSimpleName().replace("Module", ""));
+			bar.step(m.getName());
 			m.onPreInit(e);
 		}
 		ProgressManager.pop(bar);
@@ -87,7 +90,7 @@ public class Fondue {
 	public void onInit(FMLInitializationEvent e) {
 		ProgressBar bar = ProgressManager.push("Initializing modules", modules.size());
 		for (Module m : modules) {
-			bar.step(m.getClass().getSimpleName().replace("Module", ""));
+			bar.step(m.getName());
 			m.onInit(e);
 		}
 		ProgressManager.pop(bar);
@@ -97,7 +100,7 @@ public class Fondue {
 	public void onPostInit(FMLPostInitializationEvent e) {
 		ProgressBar bar = ProgressManager.push("Initializing modules", modules.size());
 		for (Module m : modules) {
-			bar.step(m.getClass().getSimpleName().replace("Module", ""));
+			bar.step(m.getName());
 			m.onPostInit(e);
 		}
 		ProgressManager.pop(bar);

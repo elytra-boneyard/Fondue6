@@ -2,6 +2,8 @@ tile.fondue.chair.name=Comfy Chair
 
 item.fondue.dyed_diamond_sword=Dyemond Sword
 item.fondue.dyed_diamond_pickaxe=Dyemond Pickaxe
+item.fondue.spectral_axe.name=Spectral Axe
+item.fondue.spectral_axe.hint=§5It's all in your head
 
 death.attack.fondue.sizzle=%1$s couldn't stop sizzling
 

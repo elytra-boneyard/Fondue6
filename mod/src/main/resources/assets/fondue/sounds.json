@@ -18,7 +18,22 @@
 	"attune": {
 		"category": "player",
 		"sounds": [
-			"fondue:attune"
+			"fondue:attune1",
+			"fondue:attune2",
+			"fondue:attune3"
+		]
+	},
+	"hollowhit": {
+		"category": "block",
+		"sounds": [
+			"fondue:hollowhit1",
+			"fondue:hollowhit2",
+			"fondue:hollowhit3",
+			"fondue:hollowhit4",
+			"fondue:hollowhit5",
+			"fondue:hollowhit6",
+			"fondue:hollowhit7",
+			"fondue:hollowhit8"
 		]
 	}
 }

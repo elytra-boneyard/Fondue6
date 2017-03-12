@@ -37,6 +37,8 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class ModuleObeliskClient extends ModuleClient {
 
@@ -59,6 +61,9 @@ public class ModuleObeliskClient extends ModuleClient {
 	
 	private ObeliskSound sound;
 	private Random rand = new Random();
+	
+	public static TileEntityObelisk attuning;
+	public static int attuneTicks = 0;
 	
 	public void spark(TileEntityObelisk teo) {
 		Minecraft mc = Minecraft.getMinecraft();
@@ -84,12 +89,24 @@ public class ModuleObeliskClient extends ModuleClient {
 		}
 	}
 	
+	public void playAttuneEffect(TileEntityObelisk teo) {
+		attuning = teo;
+		attuneTicks = 0;
+	}
+	
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityObelisk.class, new RenderObelisk());
-		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 0.35f, 0.75f);
+		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 0.35f, 1.5f);
 		
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@SubscribeEvent
+	public void onTick(ClientTickEvent e) {
+		if (e.phase == Phase.START) {
+			attuneTicks++;
+		}
 	}
 	
 	@SubscribeEvent

@@ -1,5 +1,8 @@
 package com.elytradev.fondue.module.obelisk;
 
+import com.elytradev.fondue.Fondue;
+import com.elytradev.fondue.module.obelisk.client.ModuleObeliskClient;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -18,6 +21,8 @@ public class TileEntityObelisk extends TileEntity {
 		
 		if (!p.world.isRemote) {
 			p.setSpawnPoint(p.getPosition(), true);
+		} else if (Fondue.isModuleLoaded(ModuleObeliskClient.class)) {
+			Fondue.getModule(ModuleObeliskClient.class).playAttuneEffect(this);
 		}
 	}
 	
