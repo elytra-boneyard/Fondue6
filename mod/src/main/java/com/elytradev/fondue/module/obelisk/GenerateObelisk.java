@@ -14,7 +14,7 @@ import net.minecraft.world.chunk.ChunkPrimer;
 
 public class GenerateObelisk {
 
-	public static final int REGION_SIZE = 32;
+	public static final int REGION_SIZE = 64;
 	
 	public static void generate(int chunkX, int chunkZ, long worldSeed, ChunkPrimer c) {
 		if (isObeliskChunk(worldSeed, chunkX, chunkZ)) {
