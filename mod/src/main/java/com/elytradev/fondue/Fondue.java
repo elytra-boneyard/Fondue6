@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 import com.elytradev.concrete.NetworkContext;
 import com.elytradev.fondue.module.Module;
 import com.elytradev.fondue.module.ModuleClient;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
@@ -67,7 +67,10 @@ public class Fondue {
 				modules.add(m);
 			}
 		}
-		Collections.sort(modules, (a, b) -> Ints.compare(a.getWeight(), b.getWeight()));
+		Collections.sort(modules, (a, b) -> ComparisonChain.start()
+				.compare(a.getWeight(), b.getWeight())
+				.compare(a.getName(), b.getName())
+				.result());
 		for (Module m : modules) {
 			log.info("Discovered {}module {}", m instanceof ModuleClient ? "client " : "", m.getName());
 		}
