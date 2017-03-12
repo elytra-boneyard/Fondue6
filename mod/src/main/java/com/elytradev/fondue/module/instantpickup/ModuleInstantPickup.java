@@ -15,8 +15,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -45,6 +47,32 @@ public class ModuleInstantPickup extends Module {
 	public void onPreInit(FMLPreInitializationEvent e) {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
+	
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void onDropXp(LivingExperienceDropEvent e) {
+		if (!e.getEntityLiving().world.getGameRules().getBoolean("doMobLoot")) return;
+		if (e.getEntityLiving().world.isRemote) return;
+		if (e.getAttackingPlayer() == null) return;
+		World world = e.getEntityLiving().world;
+		int amount = e.getDroppedExperience();
+		int oldCooldown = e.getAttackingPlayer().xpCooldown;
+		while (amount > 0) {
+			int i = EntityXPOrb.getXPSplit(amount);
+			amount -= i;
+			EntityXPOrb exp = new EntityXPOrb(world, e.getEntityLiving().posX, e.getEntityLiving().posY, e.getEntityLiving().posZ, i);
+			e.getAttackingPlayer().xpCooldown = 0;
+			int oldDelay = exp.delayBeforeCanPickup;
+			exp.delayBeforeCanPickup = 0;
+			world.spawnEntity(exp);
+			exp.onCollideWithPlayer(e.getAttackingPlayer());
+			if (!exp.isDead) {
+				exp.delayBeforeCanPickup = oldDelay;
+			}
+		}
+		e.getAttackingPlayer().xpCooldown = oldCooldown;
+		e.setDroppedExperience(0);
+	}
+	
 	
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void onDrops(LivingDropsEvent e) {
