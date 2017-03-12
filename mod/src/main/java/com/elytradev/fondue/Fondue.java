@@ -3,6 +3,7 @@ package com.elytradev.fondue;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +17,10 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.MetadataCollection;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -26,8 +30,12 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid="fondue", name="Fondue", version="@VERSION@")
+@Mod(modid=Fondue.MODID, name=Fondue.NAME, version=Fondue.VERSION)
 public class Fondue {
+	
+	public static final String MODID = "fondue";
+	public static final String NAME = "Fondue";
+	public static final String VERSION = "@VERSION@";
 
 	private static final Logger log = LogManager.getLogger("Fondue");
 	
@@ -76,6 +84,38 @@ public class Fondue {
 		}
 		log.info("Disabling modules is not officially supported. If you really want to disable one, open the Fondue mod jar and delete the module class.");
 		ProgressManager.pop(bar);
+		MetadataCollection mc = new MetadataCollection() {
+			@Override
+			public ModMetadata getMetadataForId(String modId, Map<String, Object> extraData) {
+				if (modId.equals(MODID)) {
+					ModMetadata mm = new ModMetadata();
+					mm.name = NAME;
+					mm.modId = MODID;
+					mm.version = VERSION;
+					mm.authorList = Lists.newArrayList("unascribed", "Falkreon");
+					StringBuilder sb = new StringBuilder("Fondue tweaks mod. Loaded modules:\n");
+					for (Module m : modules) {
+						sb.append("\u00A7m--\u00A7e ");
+						sb.append(m.getName());
+						sb.append("\u00A7r \u00A7m--\n");
+						sb.append(m.getDescription());
+						if (!m.getGoals().isEmpty()) {
+							sb.append("\n");
+							for (Goal g : m.getGoals()) {
+								sb.append(" - ");
+								sb.append(g.description);
+								sb.append("\n");
+							}
+						}
+						sb.append("\n\n");
+					}
+					mm.description = sb.toString();
+					return mm;
+				}
+				return super.getMetadataForId(modId, extraData);
+			}
+		};
+		Loader.instance().activeModContainer().bindMetadata(mc);
 	}
 	
 	@EventHandler
