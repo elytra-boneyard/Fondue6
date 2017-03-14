@@ -1,4 +1,5 @@
-<img src="https://rawgit.com/elytra/Fondue6/master/fondue.svg" align="right" width="180px">
+<img src="https://rawgit.com/elytra/Fondue6/master/fondue.svg" align="right" width="180px"/>
+
 # Fondue 6
 *A tasty mixture of gooey melted mods for 1.11.2*
 
