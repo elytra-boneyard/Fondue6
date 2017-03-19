@@ -7,7 +7,8 @@
     "include" : [
       "options.txt",
       "optionsshaders.txt",
-      "config/fruitphone.cfg"
+      "config/fruitphone.cfg",
+      "config/chiselsandbits_clipboard.cfg"
     ],
     "exclude" : [ ]
   },
