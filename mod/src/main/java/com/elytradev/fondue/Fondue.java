@@ -66,6 +66,14 @@ public class Fondue {
 		Set<ClassInfo> info = ClassPath.from(getClass().getClassLoader()).getTopLevelClassesRecursive("com.elytradev.fondue.module");
 		ProgressBar bar = ProgressManager.push("Discovering modules", info.size());
 		for (ClassInfo ci : info) {
+			if (!e.getSide().isClient() && ci.getName().endsWith("Client")) {
+				bar.step(ci.getName());
+				continue;
+			}
+			if (!ci.getName().contains("Module")) {
+				bar.step(ci.getName());
+				continue;
+			}
 			Class<?> clazz = ci.load();
 			bar.step(clazz);
 			if (Modifier.isAbstract(clazz.getModifiers())) continue;

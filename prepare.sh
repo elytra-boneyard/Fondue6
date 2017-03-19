@@ -10,9 +10,11 @@ find ./ -name '*.url.txt' | while read file; do
 	fi
 done
 cd mod
-echo Building the Fondue mod...
-gradle clean build > /dev/null 2>&1
-rm -f ../src/mods/1.11.2/Fondue-*.jar
-rm build/libs/*-slim.jar
-rm build/libs/*-sources.jar
-cp build/libs/* ../src/mods/1.11.2/
+if [ -z "$1" ]; then
+	echo Building the Fondue mod...
+	gradle clean build > /dev/null 2>&1
+	rm -f ../src/mods/1.11.2/Fondue-*.jar
+	rm build/libs/*-slim.jar
+	rm build/libs/*-sources.jar
+	cp build/libs/* ../src/mods/1.11.2/
+fi

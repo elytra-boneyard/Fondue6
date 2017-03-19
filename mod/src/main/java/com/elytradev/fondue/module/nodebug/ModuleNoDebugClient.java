@@ -16,9 +16,10 @@ import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class ModuleNoDebug extends ModuleClient {
+public class ModuleNoDebugClient extends ModuleClient {
 
 	@Override
 	public String getName() {
@@ -44,7 +45,7 @@ public class ModuleNoDebug extends ModuleClient {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void onRenderText(RenderGameOverlayEvent.Text e) {
 		if (Minecraft.getMinecraft().gameSettings.showDebugInfo) {
 			if (Minecraft.getMinecraft().player.isCreative()) {
