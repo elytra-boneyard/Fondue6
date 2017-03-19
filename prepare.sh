@@ -9,10 +9,10 @@ find ./ -name '*.url.txt' | while read file; do
 		echo Skipping download of existing file `basename $basename`
 	fi
 done
-cd mod
 if [ -z "$1" ]; then
+	cd mod
 	echo Building the Fondue mod...
-	gradle clean build > /dev/null 2>&1
+	./gradlew clean build > /dev/null 2>&1
 	rm -f ../src/mods/1.11.2/Fondue-*.jar
 	rm build/libs/*-slim.jar
 	rm build/libs/*-sources.jar
