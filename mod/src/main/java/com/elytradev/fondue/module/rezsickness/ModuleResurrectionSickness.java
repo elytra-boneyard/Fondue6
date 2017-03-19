@@ -51,7 +51,6 @@ public class ModuleResurrectionSickness extends Module {
 		e.player.addPotionEffect(sickness);
 		e.player.setHealth(e.player.getMaxHealth()/2);
 		// Death is NOT a viable food source.
-		e.player.getFoodStats().setFoodSaturationLevel(0);
 		e.player.getFoodStats().setFoodLevel(8);
 	}
 	

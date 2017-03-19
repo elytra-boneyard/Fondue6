@@ -19,7 +19,7 @@ if [ -z "$1" ]; then
 		./gradlew setupDecompWorkspace
 	fi
 	echo Building the Fondue mod...
-	./gradlew clean build > /dev/null 2>&1
+	./gradlew clean build
 	rm -f ../src/mods/1.11.2/Fondue-*.jar
 	rm build/libs/*-slim.jar
 	rm build/libs/*-sources.jar
