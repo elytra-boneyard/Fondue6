@@ -4,7 +4,7 @@ find ./ -name '*.url.txt' | while read file; do
 	if [ ! -e "$basename" ]; then
 		url=`cat $file`
 		echo Downloading $url...
-		curl -s "$url" -o "$basename"
+		curl -L -s "$url" -o "$basename"
 	else
 		echo Skipping download of existing file `basename $basename`
 	fi
