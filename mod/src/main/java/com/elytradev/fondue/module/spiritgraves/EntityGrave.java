@@ -5,9 +5,19 @@ import java.util.List;
 import java.util.UUID;
 
 import com.elytradev.fondue.Fondue;
+import com.elytradev.fondue.module.spiritgraves.ai.EntityAIMagnetize;
+import com.elytradev.fondue.module.spiritgraves.ai.EntityAISeekSun;
+import com.elytradev.fondue.module.spiritgraves.ai.FloatMoveHelper;
+import com.elytradev.fondue.module.spiritgraves.ai.PathNavigateFloater;
 import com.elytradev.fondue.module.spiritgraves.client.ModuleSpiritGravesClient;
+import com.elytradev.fruitphone.FruitPhone;
+import com.elytradev.fruitphone.capability.FruitEquipmentCapability;
+import com.elytradev.fruitphone.network.EquipmentDataPacket;
 import com.google.common.base.Optional;
 import com.mojang.authlib.GameProfile;
+
+import baubles.api.BaublesApi;
+import baubles.api.cap.IBaublesItemHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -25,6 +35,7 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
@@ -57,7 +68,16 @@ public class EntityGrave extends EntityCreature {
 	private static final DataParameter<ItemStack> LEGGINGS = EntityDataManager.createKey(EntityGrave.class, DataSerializers.OPTIONAL_ITEM_STACK);
 	private static final DataParameter<ItemStack> BOOTS = EntityDataManager.createKey(EntityGrave.class, DataSerializers.OPTIONAL_ITEM_STACK);
 	
-	private ItemStack[] inventory = new ItemStack[0];
+	
+	public static final int INVENTORY_SIZE =
+			36 + // Main
+			4 + // Armor
+			1 + // Offhand
+			7 + // Baubles
+			1 // Fruit Glass
+			;
+	
+	private ItemStack[] inventory = new ItemStack[INVENTORY_SIZE];
 	private NonNullList<ItemStack> extras = NonNullList.create();
 	
 	private GameProfile profile;
@@ -66,6 +86,11 @@ public class EntityGrave extends EntityCreature {
 		super(worldIn);
 		setSize(0.5f, 0.5f);
 		this.moveHelper = new FloatMoveHelper(this);
+	}
+	
+	@Override
+	protected boolean canDespawn() {
+		return false;
 	}
 	
 	@Override
@@ -148,6 +173,11 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 	@Override
+	public boolean canRenderOnFire() {
+		return false;
+	}
+	
+	@Override
 	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
 		// overriding this method means we still get knockback, but no damage
 		if (damageSrc instanceof EntityDamageSource) {
@@ -172,6 +202,16 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 	@Override
+	public void setHomePosAndDistance(BlockPos pos, int distance) {
+		if ("TJ \"Henry\" Yoshi".equals(getName())) {
+			// Update our home to the death barrier
+			super.setHomePosAndDistance(pos.offset(EnumFacing.DOWN, pos.getY()+64), distance);
+		} else {
+			super.setHomePosAndDistance(pos, distance);
+		}
+	}
+	
+	@Override
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand stack) {
 		if (!world.isRemote) {
 			giveItems(player);
@@ -181,6 +221,13 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 	private void giveItems(EntityPlayer player) {
+		IBaublesItemHandler ibih = BaublesApi.getBaublesHandler(player);
+		
+		FruitEquipmentCapability fec = null;
+		if (player.hasCapability(FruitPhone.CAPABILITY_EQUIPMENT, null)) {
+			fec = player.getCapability(FruitPhone.CAPABILITY_EQUIPMENT, null);
+		}
+		
 		for (ItemStack is : player.inventory.armorInventory) {
 			extras.add(is);
 		}
@@ -189,6 +236,14 @@ public class EntityGrave extends EntityCreature {
 		}
 		for (ItemStack is : player.inventory.offHandInventory) {
 			extras.add(is);
+		}
+		for (int i = 0; i < ibih.getSlots(); i++) {
+			extras.add(ibih.getStackInSlot(i));
+			ibih.setStackInSlot(i, ItemStack.EMPTY);
+		}
+		if (fec != null) {
+			extras.add(fec.glasses);
+			fec.glasses = ItemStack.EMPTY;
 		}
 		player.inventory.armorInventory.clear();
 		player.inventory.mainInventory.clear();
@@ -203,8 +258,22 @@ public class EntityGrave extends EntityCreature {
 			player.inventory.armorInventory.set(i, inventory[36+i]);
 		}
 		player.inventory.offHandInventory.set(0, inventory[40]);
+		for (int i = 0; i < 7; i++) {
+			ibih.setStackInSlot(i, inventory[41+i]);
+		}
+		if (fec != null) {
+			fec.glasses = inventory[48];
+			EquipmentDataPacket.forEntity(player).ifPresent(p -> {
+				p.sendToAllWatching(player);
+				p.sendTo(player);
+			});
+		} else {
+			extras.add(inventory[48]);
+		}
+		
 		
 		for (ItemStack is : extras) {
+			if (is.isEmpty()) continue;
 			if (!player.inventory.addItemStackToInventory(is)) {
 				entityDropItem(is, 0.15f);
 			}
@@ -281,7 +350,7 @@ public class EntityGrave extends EntityCreature {
 	
 	public void populateFrom(EntityPlayer player, boolean clear) {
 		InventoryPlayer inv = player.inventory;
-		inventory = new ItemStack[41];
+		inventory = new ItemStack[INVENTORY_SIZE];
 		Arrays.fill(inventory, ItemStack.EMPTY);
 		int i = 0;
 		for (ItemStack is : inv.mainInventory) {
@@ -296,6 +365,20 @@ public class EntityGrave extends EntityCreature {
 			inventory[i] = is;
 			i++;
 		}
+		IBaublesItemHandler ibih = BaublesApi.getBaublesHandler(player);
+		for (int j = 0; j < ibih.getSlots(); j++) {
+			inventory[i] = ibih.getStackInSlot(j);
+			ibih.setStackInSlot(j, ItemStack.EMPTY);
+			i++;
+		}
+		if (player.hasCapability(FruitPhone.CAPABILITY_EQUIPMENT, null)) {
+			FruitEquipmentCapability fec = player.getCapability(FruitPhone.CAPABILITY_EQUIPMENT, null);
+			inventory[i] = fec.glasses;
+			fec.glasses = ItemStack.EMPTY;
+			i++;
+		}
+		
+		
 		dataManager.set(SELECTED_SLOT, inv.currentItem);
 		
 		buildClientData();
@@ -328,6 +411,10 @@ public class EntityGrave extends EntityCreature {
 		super.onUpdate();
 		if (Fondue.isModuleLoaded(ModuleSpiritGravesClient.class)) {
 			Fondue.getModule(ModuleSpiritGravesClient.class).onUpdate(this);
+		}
+		if (posY < 50 && world.getHeight((int)posX, (int)posZ) <= 0) {
+			// Float out of the void
+			motionY = 0.5;
 		}
 	}
 	
@@ -442,7 +529,7 @@ public class EntityGrave extends EntityCreature {
 		profile = null;
 		
 		NBTTagList inv = compound.getTagList("Inventory", NBT.TAG_COMPOUND);
-		inventory = new ItemStack[41];
+		inventory = new ItemStack[INVENTORY_SIZE];
 		Arrays.fill(inventory, ItemStack.EMPTY);
 		for (int i = 0; i < inv.tagCount(); i++) {
 			NBTTagCompound tag = inv.getCompoundTagAt(i);

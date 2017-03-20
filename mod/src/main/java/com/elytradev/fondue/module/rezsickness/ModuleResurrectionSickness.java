@@ -46,6 +46,7 @@ public class ModuleResurrectionSickness extends Module {
 	
 	@SubscribeEvent
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
+		if (e.isEndConquered()) return;
 		PotionEffect sickness = new PotionEffect(RESURRECTION_SICKNESS, 18000);
 		sickness.setCurativeItems(Collections.emptyList());
 		e.player.addPotionEffect(sickness);

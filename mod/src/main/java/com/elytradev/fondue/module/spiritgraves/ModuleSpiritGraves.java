@@ -46,6 +46,7 @@ public class ModuleSpiritGraves extends Module {
 		if (e.getEntity() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)e.getEntity();
 			EntityGrave grave = new EntityGrave(e.getEntity().world);
+			grave.setHomePosAndDistance(e.getEntity().getPosition(), 16);
 			grave.setPosition(player.posX, player.posY, player.posZ);
 			grave.populateFrom(player, true);
 			player.world.spawnEntity(grave);

@@ -1,4 +1,4 @@
-package com.elytradev.fondue.module.spiritgraves;
+package com.elytradev.fondue.module.spiritgraves.ai;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;

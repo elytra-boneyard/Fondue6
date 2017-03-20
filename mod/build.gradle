@@ -91,6 +91,10 @@ dependencies {
 	
 	shadow 'com.elytradev:concrete:0.1.0'
 	compile 'com.elytradev:concrete:0.1.0'
+
+	compile files('../src/mods/1.11.2/Baubles-1.11-1.4.3.jar')
+	compile files('../src/mods/1.11.2/FruitPhone-1.11.2-0.1.7-80e4f38d.jar')
+	compile files('../src/mods/1.11.2/ProbeDataProviderAPI-MC1.11.2_ver1.1.1.jar')
 }
 
 minecraft {

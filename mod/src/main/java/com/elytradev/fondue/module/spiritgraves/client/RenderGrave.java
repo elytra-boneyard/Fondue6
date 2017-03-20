@@ -33,6 +33,17 @@ public class RenderGrave extends Render<EntityGrave> {
 	
 	@Override
 	public void doRender(EntityGrave entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		double scale = 0.25;
+		double distanceSq = (x*x)+(y*y)+(z*z);
+		if (distanceSq > 256) {
+			double distance = Math.sqrt(distanceSq)-16;
+			System.out.println(distance);
+			if (distance > 15) {
+				distance = 15-(distance-10);
+			}
+			scale = 0.25+Math.log10(distance+1);
+		}
+		if (scale <= 0) return;
 		GlStateManager.pushMatrix();
 			GlStateManager.translate(x, y, z);
 			GlStateManager.enableRescaleNormal();
@@ -41,7 +52,7 @@ public class RenderGrave extends Render<EntityGrave> {
 			GlStateManager.disableDepth();
 			GlStateManager.shadeModel(GL11.GL_SMOOTH);
 			GlStateManager.disableLighting();
-			GlStateManager.scale(0.25, 0.25, 0.25);
+			GlStateManager.scale(scale, scale, scale);
 			float sin = MathHelper.sin((entity.ticksExisted+partialTicks)/10f);
 			GlStateManager.translate(0, 1+(sin/16f), 0);
 			
