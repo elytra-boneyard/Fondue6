@@ -15,12 +15,27 @@
 			}
 		]
 	},
+	"spirit": {
+		"category": "ambient",
+		"sounds": [
+			{
+				"name": "fondue:spirit",
+				"stream": true
+			}
+		]
+	},
 	"attune": {
 		"category": "player",
 		"sounds": [
 			"fondue:attune1",
 			"fondue:attune2",
 			"fondue:attune3"
+		]
+	},
+	"dispel": {
+		"category": "player",
+		"sounds": [
+			"fondue:dispel"
 		]
 	},
 	"hollowhit": {

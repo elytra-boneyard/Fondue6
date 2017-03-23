@@ -1,19 +1,16 @@
 package com.elytradev.fondue.module.spiritgraves;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import com.elytradev.fondue.Fondue;
-import com.elytradev.fondue.module.spiritgraves.ai.EntityAIMagnetize;
-import com.elytradev.fondue.module.spiritgraves.ai.EntityAISeekSun;
-import com.elytradev.fondue.module.spiritgraves.ai.FloatMoveHelper;
-import com.elytradev.fondue.module.spiritgraves.ai.PathNavigateFloater;
 import com.elytradev.fondue.module.spiritgraves.client.ModuleSpiritGravesClient;
 import com.elytradev.fruitphone.FruitPhone;
 import com.elytradev.fruitphone.capability.FruitEquipmentCapability;
 import com.elytradev.fruitphone.network.EquipmentDataPacket;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 
 import baubles.api.BaublesApi;
@@ -21,7 +18,7 @@ import baubles.api.cap.IBaublesItemHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -31,23 +28,23 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 
-public class EntityGrave extends EntityCreature {
+public class EntityGrave extends Entity {
 
 	private static final DataParameter<Optional<UUID>> OWNER = EntityDataManager.createKey(EntityGrave.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<String> OWNER_NAME = EntityDataManager.createKey(EntityGrave.class, DataSerializers.STRING);
 	private static final DataParameter<Integer> SELECTED_SLOT = EntityDataManager.createKey(EntityGrave.class, DataSerializers.VARINT);
 	private static final DataParameter<Boolean> RIGHT_HANDED = EntityDataManager.createKey(EntityGrave.class, DataSerializers.BOOLEAN);
 	
@@ -71,13 +68,13 @@ public class EntityGrave extends EntityCreature {
 	
 	public static final int INVENTORY_SIZE =
 			36 + // Main
-			4 + // Armor
-			1 + // Offhand
-			7 + // Baubles
-			1 // Fruit Glass
+			 4 + // Armor
+			 1 + // Offhand
+			 7 + // Baubles
+			 1   // Fruit Glass
 			;
 	
-	private ItemStack[] inventory = new ItemStack[INVENTORY_SIZE];
+	private NonNullList<ItemStack> inventory = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
 	private NonNullList<ItemStack> extras = NonNullList.create();
 	
 	private GameProfile profile;
@@ -85,27 +82,6 @@ public class EntityGrave extends EntityCreature {
 	public EntityGrave(World worldIn) {
 		super(worldIn);
 		setSize(0.5f, 0.5f);
-		this.moveHelper = new FloatMoveHelper(this);
-	}
-	
-	@Override
-	protected boolean canDespawn() {
-		return false;
-	}
-	
-	@Override
-	protected SoundEvent getDeathSound() {
-		return null;
-	}
-	
-	@Override
-	protected SoundEvent getFallSound(int heightIn) {
-		return null;
-	}
-	
-	@Override
-	protected SoundEvent getHurtSound() {
-		return null;
 	}
 	
 	@Override
@@ -129,21 +105,8 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 	@Override
-	protected void collideWithNearbyEntities() {
-	}
-	
-	@Override
-	protected void collideWithEntity(Entity entityIn) {
-	}
-	
-	@Override
 	public boolean canBeCollidedWith() {
 		return true;
-	}
-	
-	@Override
-	public boolean canBeLeashedTo(EntityPlayer player) {
-		return false;
 	}
 	
 	@Override
@@ -158,18 +121,7 @@ public class EntityGrave extends EntityCreature {
 	
 	@Override
 	public boolean doesEntityNotTriggerPressurePlate() {
-		return false;
-	}
-	
-	@Override
-	protected void initEntityAI() {
-		tasks.addTask(0, new EntityAISeekSun(this, 0.5f));
-		tasks.addTask(1, new EntityAIMagnetize(this));
-	}
-	
-	@Override
-	protected PathNavigate createNavigator(World worldIn) {
-		return new PathNavigateFloater(this);
+		return true;
 	}
 	
 	@Override
@@ -178,15 +130,24 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 	@Override
-	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
-		// overriding this method means we still get knockback, but no damage
-		if (damageSrc instanceof EntityDamageSource) {
-			EntityDamageSource eds = (EntityDamageSource)damageSrc;
+	public AxisAlignedBB getCollisionBoundingBox() {
+		return null;
+	}
+	
+	@Override
+	public boolean attackEntityFrom(DamageSource source, float amount) {
+		if (source instanceof EntityDamageSource) {
+			EntityDamageSource eds = (EntityDamageSource)source;
 			if (eds.getEntity() instanceof EntityPlayer) {
-				giveItems((EntityPlayer)eds.getEntity());
-				setDead();
+				if (isOwner((EntityPlayer)eds.getEntity())) {
+					giveItems((EntityPlayer)eds.getEntity(), true);
+					playSound(ModuleSpiritGraves.DISPEL, 1, 1);
+					new GraveDispelMessage(eds.getEntity(), this).sendToAllWatching(this);
+					setDead();
+				}
 			}
 		}
+		return false;
 	}
 	
 	@Override
@@ -202,80 +163,78 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 	@Override
-	public void setHomePosAndDistance(BlockPos pos, int distance) {
-		if ("TJ \"Henry\" Yoshi".equals(getName())) {
-			// Update our home to the death barrier
-			super.setHomePosAndDistance(pos.offset(EnumFacing.DOWN, pos.getY()+64), distance);
-		} else {
-			super.setHomePosAndDistance(pos, distance);
-		}
-	}
-	
-	@Override
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand stack) {
-		if (!world.isRemote) {
-			giveItems(player);
+		if (!world.isRemote && (player.isSneaking() || isOwner(player))) {
+			giveItems(player, false);
+			new GraveDispelMessage(player, this).sendToAllWatching(this);
+			playSound(ModuleSpiritGraves.DISPEL, 1, 1);
 			setDead();
 		}
 		return EnumActionResult.SUCCESS;
 	}
 	
-	private void giveItems(EntityPlayer player) {
-		IBaublesItemHandler ibih = BaublesApi.getBaublesHandler(player);
-		
-		FruitEquipmentCapability fec = null;
-		if (player.hasCapability(FruitPhone.CAPABILITY_EQUIPMENT, null)) {
-			fec = player.getCapability(FruitPhone.CAPABILITY_EQUIPMENT, null);
-		}
-		
-		for (ItemStack is : player.inventory.armorInventory) {
-			extras.add(is);
-		}
-		for (ItemStack is : player.inventory.mainInventory) {
-			extras.add(is);
-		}
-		for (ItemStack is : player.inventory.offHandInventory) {
-			extras.add(is);
-		}
-		for (int i = 0; i < ibih.getSlots(); i++) {
-			extras.add(ibih.getStackInSlot(i));
-			ibih.setStackInSlot(i, ItemStack.EMPTY);
-		}
-		if (fec != null) {
-			extras.add(fec.glasses);
-			fec.glasses = ItemStack.EMPTY;
-		}
-		player.inventory.armorInventory.clear();
-		player.inventory.mainInventory.clear();
-		player.inventory.offHandInventory.clear();
-		
-		player.heal(player.getMaxHealth()/2);
-		
-		for (int i = 0; i < 36; i++) {
-			player.inventory.mainInventory.set(i, inventory[i]);
-		}
-		for (int i = 0; i < 4; i++) {
-			player.inventory.armorInventory.set(i, inventory[36+i]);
-		}
-		player.inventory.offHandInventory.set(0, inventory[40]);
-		for (int i = 0; i < 7; i++) {
-			ibih.setStackInSlot(i, inventory[41+i]);
-		}
-		if (fec != null) {
-			fec.glasses = inventory[48];
-			EquipmentDataPacket.forEntity(player).ifPresent(p -> {
-				p.sendToAllWatching(player);
-				p.sendTo(player);
-			});
+	private void giveItems(EntityPlayer player, boolean displace) {
+		Iterable<ItemStack> drops;
+		if (displace) {
+			IBaublesItemHandler ibih = BaublesApi.getBaublesHandler(player);
+			
+			FruitEquipmentCapability fec = null;
+			if (player.hasCapability(FruitPhone.CAPABILITY_EQUIPMENT, null)) {
+				fec = player.getCapability(FruitPhone.CAPABILITY_EQUIPMENT, null);
+			}
+			
+			for (ItemStack is : player.inventory.armorInventory) {
+				extras.add(is);
+			}
+			for (ItemStack is : player.inventory.mainInventory) {
+				extras.add(is);
+			}
+			for (ItemStack is : player.inventory.offHandInventory) {
+				extras.add(is);
+			}
+			for (int i = 0; i < ibih.getSlots(); i++) {
+				extras.add(ibih.getStackInSlot(i));
+				ibih.setStackInSlot(i, ItemStack.EMPTY);
+			}
+			if (fec != null) {
+				extras.add(fec.glasses);
+				fec.glasses = ItemStack.EMPTY;
+			}
+			player.inventory.armorInventory.clear();
+			player.inventory.mainInventory.clear();
+			player.inventory.offHandInventory.clear();
+			
+			player.heal(player.getMaxHealth()/2);
+			
+			for (int i = 0; i < 36; i++) {
+				player.inventory.mainInventory.set(i, inventory.get(i));
+			}
+			for (int i = 0; i < 4; i++) {
+				player.inventory.armorInventory.set(i, inventory.get(36+i));
+			}
+			player.inventory.offHandInventory.set(0, inventory.get(40));
+			for (int i = 0; i < 7; i++) {
+				ibih.setStackInSlot(i, inventory.get(41+i));
+			}
+			if (fec != null) {
+				fec.glasses = inventory.get(48);
+				EquipmentDataPacket.forEntity(player).ifPresent(p -> {
+					p.sendToAllWatching(player);
+					p.sendTo(player);
+				});
+			} else {
+				extras.add(inventory.get(48));
+			}
+			drops = extras;
 		} else {
-			extras.add(inventory[48]);
+			drops = Iterables.concat(inventory, extras);
 		}
 		
 		
-		for (ItemStack is : extras) {
+		for (ItemStack is : drops) {
 			if (is.isEmpty()) continue;
 			if (!player.inventory.addItemStackToInventory(is)) {
-				entityDropItem(is, 0.15f);
+				entityDropItem(is, 0.25f);
 			}
 		}
 	}
@@ -283,7 +242,7 @@ public class EntityGrave extends EntityCreature {
 	public GameProfile getOwner() {
 		if (dataManager.get(OWNER).isPresent()) {
 			if (profile == null) {
-				profile = new GameProfile(dataManager.get(OWNER).get(), null);
+				profile = new GameProfile(dataManager.get(OWNER).get(), Strings.emptyToNull(dataManager.get(OWNER_NAME)));
 				try {
 					Minecraft.getMinecraft().getSessionService().fillProfileProperties(profile, true);
 				} catch (Exception e) {}
@@ -297,10 +256,19 @@ public class EntityGrave extends EntityCreature {
 	public void setOwner(GameProfile owner) {
 		if (owner == null) {
 			dataManager.set(OWNER, Optional.absent());
+			dataManager.set(OWNER_NAME, "");
 		} else {
 			dataManager.set(OWNER, Optional.fromNullable(owner.getId()));
+			dataManager.set(OWNER_NAME, Strings.nullToEmpty(owner.getName()));
 		}
 		this.profile = owner;
+	}
+	
+	public boolean isOwner(EntityPlayer ep) {
+		UUID u = ep.getGameProfile().getId();
+		if (u == null) return false;
+		Optional<UUID> opt = dataManager.get(OWNER);
+		return opt.isPresent() && opt.get().equals(u);
 	}
 	
 	private DataParameter<ItemStack> getHotbarParam(int i) {
@@ -348,33 +316,30 @@ public class EntityGrave extends EntityCreature {
 		return extras;
 	}
 	
-	public void populateFrom(EntityPlayer player, boolean clear) {
+	public void populateFrom(EntityPlayer player) {
 		InventoryPlayer inv = player.inventory;
-		inventory = new ItemStack[INVENTORY_SIZE];
-		Arrays.fill(inventory, ItemStack.EMPTY);
+		inventory.clear();
 		int i = 0;
 		for (ItemStack is : inv.mainInventory) {
-			inventory[i] = is;
+			inventory.set(i, is);
 			i++;
 		}
 		for (ItemStack is : inv.armorInventory) {
-			inventory[i] = is;
+			inventory.set(i, is);
 			i++;
 		}
 		for (ItemStack is : inv.offHandInventory) {
-			inventory[i] = is;
+			inventory.set(i, is);
 			i++;
 		}
 		IBaublesItemHandler ibih = BaublesApi.getBaublesHandler(player);
 		for (int j = 0; j < ibih.getSlots(); j++) {
-			inventory[i] = ibih.getStackInSlot(j);
-			ibih.setStackInSlot(j, ItemStack.EMPTY);
+			inventory.set(i, ibih.getStackInSlot(j));
 			i++;
 		}
 		if (player.hasCapability(FruitPhone.CAPABILITY_EQUIPMENT, null)) {
 			FruitEquipmentCapability fec = player.getCapability(FruitPhone.CAPABILITY_EQUIPMENT, null);
-			inventory[i] = fec.glasses;
-			fec.glasses = ItemStack.EMPTY;
+			inventory.set(i, fec.glasses);
 			i++;
 		}
 		
@@ -385,25 +350,44 @@ public class EntityGrave extends EntityCreature {
 		
 		dataManager.set(RIGHT_HANDED, player.getPrimaryHand() == EnumHandSide.RIGHT);
 		setOwner(player.getGameProfile());
-		
-		if (clear) {
-			inv.mainInventory.clear();
-			inv.armorInventory.clear();
-			inv.offHandInventory.clear();
+	}
+	
+	public void clear(EntityPlayer player) {
+		InventoryPlayer inv = player.inventory;
+		IBaublesItemHandler ibih = BaublesApi.getBaublesHandler(player);
+		for (int j = 0; j < ibih.getSlots(); j++) {
+			ibih.setStackInSlot(j, ItemStack.EMPTY);
 		}
+		
+		if (player.hasCapability(FruitPhone.CAPABILITY_EQUIPMENT, null)) {
+			FruitEquipmentCapability fec = player.getCapability(FruitPhone.CAPABILITY_EQUIPMENT, null);
+			fec.glasses = ItemStack.EMPTY;
+		}
+		
+		inv.mainInventory.clear();
+		inv.armorInventory.clear();
+		inv.offHandInventory.clear();
+	}
+	
+	public boolean isEmpty() {
+		if (!extras.isEmpty()) return false;
+		for (ItemStack is : inventory) {
+			if (is != null && !is.isEmpty()) return false;
+		}
+		return true;
 	}
 	
 	private void buildClientData() {
 		for (int j = 0; j < 9; j++) {
-			setHotbarItem(j, inventory[j]);
+			setHotbarItem(j, inventory.get(j));
 		}
 		
-		dataManager.set(OFFHAND, inventory[40]);
+		dataManager.set(OFFHAND, inventory.get(40));
 		
-		setItemStackToSlot(EntityEquipmentSlot.HEAD, inventory[39]);
-		setItemStackToSlot(EntityEquipmentSlot.CHEST, inventory[38]);
-		setItemStackToSlot(EntityEquipmentSlot.LEGS, inventory[37]);
-		setItemStackToSlot(EntityEquipmentSlot.FEET, inventory[36]);
+		setItemStackToSlot(EntityEquipmentSlot.HEAD, inventory.get(39));
+		setItemStackToSlot(EntityEquipmentSlot.CHEST,inventory.get(38));
+		setItemStackToSlot(EntityEquipmentSlot.LEGS, inventory.get(37));
+		setItemStackToSlot(EntityEquipmentSlot.FEET, inventory.get(36));
 	}
 	
 	@Override
@@ -412,16 +396,55 @@ public class EntityGrave extends EntityCreature {
 		if (Fondue.isModuleLoaded(ModuleSpiritGravesClient.class)) {
 			Fondue.getModule(ModuleSpiritGravesClient.class).onUpdate(this);
 		}
-		if (posY < 50 && world.getHeight((int)posX, (int)posZ) <= 0) {
+		if (posY < 5) {
 			// Float out of the void
 			motionY = 0.5;
 		}
+		motionX *= 0.5;
+		motionY *= 0.5;
+		motionZ *= 0.5;
+		for (EntityPlayer ep : world.getEntitiesWithinAABB(EntityPlayer.class, getEntityBoundingBox().expand(16, 128, 16))) {
+			double dist = new Vec3d(ep.posX, posY, ep.posZ).squareDistanceTo(posX, posY, posZ);
+			if (!ep.isDead
+					&& dist < 256
+					&& ep.canEntityBeSeen(this)) {
+				dist = ep.getDistanceSqToEntity(this);
+				Vec3d look = ep.getLook(1).normalize();
+				Vec3d diff = new Vec3d(posX - ep.posX, getEntityBoundingBox().minY + 0.25 - (ep.posY + ep.getEyeHeight()), posZ - ep.posZ);
+				double len = diff.lengthVector();
+				diff = diff.normalize();
+				double dot = look.dotProduct(diff);
+				if (dot > 1 - 0.025 / len) {
+					if (dist > 3.7 || dist < 3.3) {
+						double speed;
+						if (dist < 3.5) {
+							speed = 0.15;
+						} else if (dist > 128) {
+							speed = -0.5;
+						} else {
+							speed = -0.15;
+						}
+						double targetX = diff.xCoord*speed;
+						double targetY = diff.yCoord*speed;
+						double targetZ = diff.zCoord*speed;
+						double diffX = targetX-motionX;
+						double diffY = targetY-motionY;
+						double diffZ = targetZ-motionZ;
+						motionX += (diffX/8);
+						motionY += (diffY/8);
+						motionZ += (diffZ/8);
+					}
+				}
+			}
+		}
+		
+		move(MoverType.SELF, motionX, motionY, motionZ);
 	}
 	
 	@Override
 	protected void entityInit() {
-		super.entityInit();
 		dataManager.register(OWNER, Optional.absent());
+		dataManager.register(OWNER_NAME, "");
 		dataManager.register(SELECTED_SLOT, 0);
 		dataManager.register(RIGHT_HANDED, true);
 		
@@ -442,54 +465,9 @@ public class EntityGrave extends EntityCreature {
 		dataManager.register(LEGGINGS, ItemStack.EMPTY);
 		dataManager.register(BOOTS, ItemStack.EMPTY);
 	}
-	
-	@Override
-	public Iterable<ItemStack> getArmorInventoryList() {
-		return Arrays.asList(
-				getItemStackFromSlot(EntityEquipmentSlot.HEAD),
-				getItemStackFromSlot(EntityEquipmentSlot.CHEST),
-				getItemStackFromSlot(EntityEquipmentSlot.LEGS),
-				getItemStackFromSlot(EntityEquipmentSlot.FEET),
-				
-				getItemStackFromSlot(EntityEquipmentSlot.MAINHAND),
-				getItemStackFromSlot(EntityEquipmentSlot.OFFHAND)
-				);
-	}
-
-	@Override
-	public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
-		switch (slotIn) {
-			case HEAD: return dataManager.get(HELMET);
-			case CHEST: return dataManager.get(CHESTPLATE);
-			case LEGS: return dataManager.get(LEGGINGS);
-			case FEET: return dataManager.get(BOOTS);
-			case MAINHAND: return getHotbarItem(dataManager.get(SELECTED_SLOT));
-			case OFFHAND: return dataManager.get(OFFHAND);
-			default: return ItemStack.EMPTY;
-		}
-	}
-
-	@Override
-	public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack) {
-		switch (slotIn) {
-			case HEAD: dataManager.set(HELMET, stack); break;
-			case CHEST: dataManager.set(CHESTPLATE, stack); break;
-			case LEGS: dataManager.set(LEGGINGS, stack); break;
-			case FEET: dataManager.set(BOOTS, stack); break;
-			case MAINHAND: setHotbarItem(dataManager.get(SELECTED_SLOT), stack); break;
-			case OFFHAND: dataManager.set(OFFHAND, stack); break;
-		}
-	}
-
-	@Override
-	public EnumHandSide getPrimaryHand() {
-		return dataManager.get(RIGHT_HANDED) ? EnumHandSide.RIGHT : EnumHandSide.LEFT;
-	}
 
 	@Override
 	public void writeEntityToNBT(NBTTagCompound compound) {
-		super.writeEntityToNBT(compound);
-		
 		compound.setBoolean("RightHanded", dataManager.get(RIGHT_HANDED));
 		compound.setByte("SelectedSlot", dataManager.get(SELECTED_SLOT).byteValue());
 		
@@ -497,10 +475,11 @@ public class EntityGrave extends EntityCreature {
 		if (owner.isPresent()) {
 			compound.setUniqueId("Owner", owner.get());
 		}
+		compound.setString("OwnerName", dataManager.get(OWNER_NAME));
 		
 		NBTTagList inv = new NBTTagList();
-		for (int i = 0; i < inventory.length; i++) {
-			ItemStack is = inventory[i];
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack is = inventory.get(i);
 			NBTTagCompound tag = is.serializeNBT();
 			tag.setInteger("Slot", i);
 			inv.appendTag(tag);
@@ -516,8 +495,6 @@ public class EntityGrave extends EntityCreature {
 
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound) {
-		super.readEntityFromNBT(compound);
-		
 		dataManager.set(RIGHT_HANDED, compound.getBoolean("RightHanded"));
 		dataManager.set(SELECTED_SLOT, compound.getInteger("SelectedSlot"));
 		
@@ -526,15 +503,15 @@ public class EntityGrave extends EntityCreature {
 		} else {
 			dataManager.set(OWNER, Optional.absent());
 		}
+		dataManager.set(OWNER_NAME, compound.getString("OwnerName"));
 		profile = null;
 		
 		NBTTagList inv = compound.getTagList("Inventory", NBT.TAG_COMPOUND);
-		inventory = new ItemStack[INVENTORY_SIZE];
-		Arrays.fill(inventory, ItemStack.EMPTY);
+		inventory.clear();
 		for (int i = 0; i < inv.tagCount(); i++) {
 			NBTTagCompound tag = inv.getCompoundTagAt(i);
 			ItemStack is = new ItemStack(tag);
-			inventory[tag.getInteger("Slot")] = is;
+			inventory.set(tag.getInteger("Slot"), is);
 		}
 		buildClientData();
 		
@@ -548,3 +525,4 @@ public class EntityGrave extends EntityCreature {
 	}
 	
 }
+

@@ -34,15 +34,6 @@ public class RenderGrave extends Render<EntityGrave> {
 	@Override
 	public void doRender(EntityGrave entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		double scale = 0.25;
-		double distanceSq = (x*x)+(y*y)+(z*z);
-		if (distanceSq > 256) {
-			double distance = Math.sqrt(distanceSq)-16;
-			System.out.println(distance);
-			if (distance > 15) {
-				distance = 15-(distance-10);
-			}
-			scale = 0.25+Math.log10(distance+1);
-		}
 		if (scale <= 0) return;
 		GlStateManager.pushMatrix();
 			GlStateManager.translate(x, y, z);
@@ -52,30 +43,31 @@ public class RenderGrave extends Render<EntityGrave> {
 			GlStateManager.disableDepth();
 			GlStateManager.shadeModel(GL11.GL_SMOOTH);
 			GlStateManager.disableLighting();
+			GlStateManager.translate(0, 0.25, 0);
 			GlStateManager.scale(scale, scale, scale);
-			float sin = MathHelper.sin((entity.ticksExisted+partialTicks)/10f);
-			GlStateManager.translate(0, 1+(sin/16f), 0);
 			
 			Tessellator tess = Tessellator.getInstance();
 			VertexBuffer vb = tess.getBuffer();
 			GlStateManager.rotate(180 - renderManager.playerViewY, 0, 1, 0);
 			GlStateManager.rotate((renderManager.options.thirdPersonView == 2 ? -1: 1) * -renderManager.playerViewX, 1, 0, 0);
 			
-			GlStateManager.rotate(((entity.ticksExisted+partialTicks))%360f, 0, 0, 1);
+			GlStateManager.pushMatrix();
+				GlStateManager.rotate((entity.ticksExisted+partialTicks)%360f, 0, 0, 1);
+				
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+				
+				if (renderOutlines) {
+					GlStateManager.enableColorMaterial();
+					GlStateManager.enableOutlineMode(getTeamColor(entity));
+				}
+				
+				bindEntityTexture(entity);
+		
+				drawFuzzyCircle(tess, vb, 0.1875f, 0.1875f, 0.0625f, 0.0625f);
+				drawFuzzyCircle(tess, vb, 0.6875f, 0.1875f, 0.0625f, 0.0625f);
+			GlStateManager.popMatrix();
 			
-			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-			
-			if (renderOutlines) {
-				GlStateManager.enableColorMaterial();
-				GlStateManager.enableOutlineMode(getTeamColor(entity));
-			}
-			
-			bindEntityTexture(entity);
-	
-			drawFuzzyCircle(tess, vb, 0.1875f, 0.1875f, 0.0625f, 0.0625f);
-			drawFuzzyCircle(tess, vb, 0.6875f, 0.1875f, 0.0625f, 0.0625f);
-	
 			if (renderOutlines) {
 				GlStateManager.disableOutlineMode();
 				GlStateManager.disableColorMaterial();
@@ -95,7 +87,7 @@ public class RenderGrave extends Render<EntityGrave> {
 	private void drawFuzzyCircle(Tessellator tess, VertexBuffer vb, float midU, float midV, float uRadius, float vRadius) {
 		vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_TEX_COLOR);
 		vb.pos(0, 0, 0).tex(midU, midV).color(1, 1, 1, 0.99f).endVertex();
-		int sides = 24;
+		int sides = 32;
 		for (int i = 0; i <= sides; i++) {
 			float theta = (float)((i/(float)sides)*(Math.PI*2));
 			float vX = MathHelper.sin(theta);

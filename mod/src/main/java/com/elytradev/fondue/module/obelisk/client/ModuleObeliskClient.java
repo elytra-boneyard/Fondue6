@@ -97,7 +97,7 @@ public class ModuleObeliskClient extends ModuleClient {
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityObelisk.class, new RenderObelisk());
-		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 0.35f, 1.5f);
+		sound = new ObeliskSound(ModuleObelisk.PULSATING, SoundCategory.AMBIENT, 0.35f, 1f);
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -129,23 +129,30 @@ public class ModuleObeliskClient extends ModuleClient {
 		if (e.getType() == ElementType.ALL) {
 			Minecraft mc = Minecraft.getMinecraft();
 			
-			Chunk c = mc.world.getChunkFromBlockCoords(mc.player.getPosition());
-			
 			float dist = -1;
 			TileEntityObelisk teo = null;
 			
-			for (TileEntity te : c.getTileEntityMap().values()) {
-				if (te instanceof TileEntityObelisk) {
-					if (Math.abs(te.getPos().getY()-mc.player.posY) > 5) continue;
-					teo = (TileEntityObelisk)te;
-					Vec3d a = mc.player.getPositionVector();
-					Vec3d b = new Vec3d(te.getPos().getX()+0.5, a.yCoord, te.getPos().getZ()+0.5);
-					dist = (float)a.distanceTo(b);
-					sound.setPosition(te.getPos());
-					if (!mc.getSoundHandler().isSoundPlaying(sound)) {
-						try {
-							mc.getSoundHandler().playSound(sound);
-						} catch (Throwable t) {}
+			int chunkX = mc.player.chunkCoordX;
+			int chunkZ = mc.player.chunkCoordZ;
+			
+			for (int x = -1; x <= 1; x++) {
+				for (int z = -1; z <= 1; z++) {
+					Chunk c = mc.world.getChunkFromChunkCoords(chunkX+x, chunkZ+z);
+					
+					for (TileEntity te : c.getTileEntityMap().values()) {
+						if (te instanceof TileEntityObelisk) {
+							if (Math.abs(te.getPos().getY()-mc.player.posY) > 5) continue;
+							teo = (TileEntityObelisk)te;
+							Vec3d a = mc.player.getPositionVector();
+							Vec3d b = new Vec3d(te.getPos().getX()+0.5, a.yCoord, te.getPos().getZ()+0.5);
+							dist = (float)a.distanceTo(b);
+							sound.setPosition(te.getPos());
+							if (!mc.getSoundHandler().isSoundPlaying(sound)) {
+								try {
+									mc.getSoundHandler().playSound(sound);
+								} catch (Throwable t) {}
+							}
+						}
 					}
 				}
 			}

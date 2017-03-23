@@ -90,8 +90,7 @@ public class BlockChair extends Block {
 				EntityPlayer ep = iter.next();
 				if (ep.isDead) {
 					iter.remove();
-				}
-				if (!ep.isRiding()) {
+				} else if (!ep.isRiding()) {
 					iter.remove();
 				} else {
 					Entity riding = ep.getRidingEntity();

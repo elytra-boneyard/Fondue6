@@ -10,6 +10,8 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
@@ -17,6 +19,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModuleSpiritGraves extends Module {
 
@@ -27,7 +30,7 @@ public class ModuleSpiritGraves extends Module {
 
 	@Override
 	public String getDescription() {
-		return "Adds balls of smoke which can be broken to get your items back in the same slots they were in originally, and that pathfind toward the surface slowly.";
+		return "Spawns balls of smoke when you die which don't despawn, and can be broken to get your items back (in the same slots they were in originally!)";
 	}
 
 	@Override
@@ -35,10 +38,16 @@ public class ModuleSpiritGraves extends Module {
 		return ImmutableSet.of(Goal.IMPROVE_VANILLA, Goal.REDUCE_FRICTION, Goal.BE_UNIQUE);
 	}
 	
+	public static SoundEvent SPIRIT;
+	public static SoundEvent DISPEL;
+	
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
 		EntityRegistry.registerModEntity(new ResourceLocation("fondue", "spirit_grave"), EntityGrave.class, "spirit_grave", 0, Fondue.inst, 64, 2, true);
+		GameRegistry.register(SPIRIT = new SoundEvent(new ResourceLocation("fondue", "spirit")).setRegistryName("spirit"));
+		GameRegistry.register(DISPEL = new SoundEvent(new ResourceLocation("fondue", "dispel")).setRegistryName("dispel"));
 		MinecraftForge.EVENT_BUS.register(this);
+		Fondue.inst.network.register(GraveDispelMessage.class);
 	}
 	
 	@SubscribeEvent(priority=EventPriority.LOWEST)
@@ -46,10 +55,15 @@ public class ModuleSpiritGraves extends Module {
 		if (e.getEntity() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)e.getEntity();
 			EntityGrave grave = new EntityGrave(e.getEntity().world);
-			grave.setHomePosAndDistance(e.getEntity().getPosition(), 16);
-			grave.setPosition(player.posX, player.posY, player.posZ);
-			grave.populateFrom(player, true);
-			player.world.spawnEntity(grave);
+			grave.setPosition(player.posX, player.posY-0.5, player.posZ);
+			grave.setVelocity(0, 0.85, 0);
+			grave.populateFrom(player);
+			if (!grave.isEmpty()) {
+				grave.clear(player);
+				player.world.spawnEntity(grave);
+			} else {
+				player.sendMessage(new TextComponentTranslation("fondue.graveEmpty"));
+			}
 		}
 	}
 	
