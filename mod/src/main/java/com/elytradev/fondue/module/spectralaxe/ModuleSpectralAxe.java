@@ -10,9 +10,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModuleSpectralAxe extends Module {
@@ -51,6 +53,17 @@ public class ModuleSpectralAxe extends Module {
 			e.player.inventory.addItemStackToInventory(new ItemStack(SPECTRAL_AXE, 1, 0));
 			e.player.getEntityData().setBoolean("fondue:seen", true);
 		}
+	}
+	
+	@SubscribeEvent
+	public void onClone(PlayerEvent.Clone e) {
+		e.getEntityPlayer().getEntityData().setBoolean("fondue:seen", e.getOriginal().getEntityData().getBoolean("fondue:seen"));
+	}
+	
+	@SubscribeEvent
+	public void onRespawn(PlayerRespawnEvent e) {
+		// respawning implies they've been here before, so just set it to true
+		e.player.getEntityData().setBoolean("fondue:seen", true);
 	}
 
 }
