@@ -56,7 +56,7 @@ public class ModuleSpiritGraves extends Module {
 			EntityPlayer player = (EntityPlayer)e.getEntity();
 			EntityGrave grave = new EntityGrave(e.getEntity().world);
 			grave.setPosition(player.posX, player.posY-0.5, player.posZ);
-			grave.setVelocity(0, 0.85, 0);
+			grave.motionY = 0.85;
 			grave.populateFrom(player);
 			if (!grave.isEmpty()) {
 				grave.clear(player);
