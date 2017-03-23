@@ -48,5 +48,15 @@
       "blockName": "minecraft:nether_wart",
       "meta": 0
     }
+  },
+  {
+    "initialBlock": {
+      "blockName": "randomthings:beanSprout",
+      "meta": 7
+    },
+    "finalBlock": {
+      "blockName": "randomthings:beanSprout",
+      "meta": 0
+    }
   }
 ]
