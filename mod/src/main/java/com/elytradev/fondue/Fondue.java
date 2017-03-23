@@ -41,6 +41,7 @@ public class Fondue {
 	
 	@Instance
 	public static Fondue inst;
+	public static int nextEntityId = 0;
 	
 	public final List<Module> modules = Lists.newArrayList();
 	public NetworkContext network;

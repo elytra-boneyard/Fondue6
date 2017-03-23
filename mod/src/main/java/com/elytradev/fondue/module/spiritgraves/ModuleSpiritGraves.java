@@ -43,7 +43,7 @@ public class ModuleSpiritGraves extends Module {
 	
 	@Override
 	public void onPreInit(FMLPreInitializationEvent e) {
-		EntityRegistry.registerModEntity(new ResourceLocation("fondue", "spirit_grave"), EntityGrave.class, "spirit_grave", 0, Fondue.inst, 64, 2, true);
+		EntityRegistry.registerModEntity(new ResourceLocation("fondue", "spirit_grave"), EntityGrave.class, "spirit_grave", Fondue.nextEntityId++, Fondue.inst, 64, 2, true);
 		GameRegistry.register(SPIRIT = new SoundEvent(new ResourceLocation("fondue", "spirit")).setRegistryName("spirit"));
 		GameRegistry.register(DISPEL = new SoundEvent(new ResourceLocation("fondue", "dispel")).setRegistryName("dispel"));
 		MinecraftForge.EVENT_BUS.register(this);
