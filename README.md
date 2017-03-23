@@ -3,7 +3,7 @@
 # Fondue 6
 *A tasty mixture of gooey melted mods for 1.11.2*
 
-**Not yet ready for use.**
+**Vaugely ready for use.** World compatibility not yet guaranteed.
 
 Fondue is a modpack founded on the following three rules:
 
