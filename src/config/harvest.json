@@ -51,11 +51,11 @@
   },
   {
     "initialBlock": {
-      "blockName": "randomthings:beanSprout",
+      "blockName": "randomthings:beansprout",
       "meta": 7
     },
     "finalBlock": {
-      "blockName": "randomthings:beanSprout",
+      "blockName": "randomthings:beansprout",
       "meta": 0
     }
   }
