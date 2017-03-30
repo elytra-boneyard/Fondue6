@@ -38,35 +38,35 @@ public class RenderWaypoint extends TileEntitySpecialRenderer<TileEntityWaypoint
 		
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.setTranslation(x, y, z);
-		vb.pos(0, 1.01, 0).tex(poleGlowmap.getMinU(), poleGlowmap.getMinV()).endVertex();
-		vb.pos(0, 1.01, 1).tex(poleGlowmap.getMinU(), poleGlowmap.getMaxV()).endVertex();
-		vb.pos(1, 1.01, 1).tex(poleGlowmap.getMaxU(), poleGlowmap.getMaxV()).endVertex();
-		vb.pos(1, 1.01, 0).tex(poleGlowmap.getMaxU(), poleGlowmap.getMinV()).endVertex();
+		vb.pos(0, 1.0005, 0).tex(poleGlowmap.getMinU(), poleGlowmap.getMinV()).endVertex();
+		vb.pos(0, 1.0005, 1).tex(poleGlowmap.getMinU(), poleGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1.0005, 1).tex(poleGlowmap.getMaxU(), poleGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1.0005, 0).tex(poleGlowmap.getMaxU(), poleGlowmap.getMinV()).endVertex();
 		
-		vb.pos(1, -0.01, 0).tex(poleGlowmap.getMaxU(), poleGlowmap.getMinV()).endVertex();
-		vb.pos(1, -0.01, 1).tex(poleGlowmap.getMaxU(), poleGlowmap.getMaxV()).endVertex();
-		vb.pos(0, -0.01, 1).tex(poleGlowmap.getMinU(), poleGlowmap.getMaxV()).endVertex();
-		vb.pos(0, -0.01, 0).tex(poleGlowmap.getMinU(), poleGlowmap.getMinV()).endVertex();
+		vb.pos(1, -0.0005, 0).tex(poleGlowmap.getMaxU(), poleGlowmap.getMinV()).endVertex();
+		vb.pos(1, -0.0005, 1).tex(poleGlowmap.getMaxU(), poleGlowmap.getMaxV()).endVertex();
+		vb.pos(0, -0.0005, 1).tex(poleGlowmap.getMinU(), poleGlowmap.getMaxV()).endVertex();
+		vb.pos(0, -0.0005, 0).tex(poleGlowmap.getMinU(), poleGlowmap.getMinV()).endVertex();
 		
-		vb.pos(1.01, 1, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
-		vb.pos(1.01, 1, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
-		vb.pos(1.01, 0, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
-		vb.pos(1.01, 0, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(1.0005, 1, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(1.0005, 1, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(1.0005, 0, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(1.0005, 0, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
 		
-		vb.pos(-0.01, 0, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
-		vb.pos(-0.01, 0, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
-		vb.pos(-0.01, 1, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
-		vb.pos(-0.01, 1, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(-0.0005, 0, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(-0.0005, 0, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(-0.0005, 1, 1).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(-0.0005, 1, 0).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
 		
-		vb.pos(0, 0, 1.01).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
-		vb.pos(1, 0, 1.01).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
-		vb.pos(1, 1, 1.01).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
-		vb.pos(0, 1, 1.01).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(0, 0, 1.0005).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 0, 1.0005).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(1, 1, 1.0005).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(0, 1, 1.0005).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
 		
-		vb.pos(0, 1, -0.01).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
-		vb.pos(1, 1, -0.01).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
-		vb.pos(1, 0, -0.01).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
-		vb.pos(0, 0, -0.01).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(0, 1, -0.0005).tex(sideGlowmap.getMinU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(1, 1, -0.0005).tex(sideGlowmap.getMaxU(), sideGlowmap.getMinV()).endVertex();
+		vb.pos(1, 0, -0.0005).tex(sideGlowmap.getMaxU(), sideGlowmap.getMaxV()).endVertex();
+		vb.pos(0, 0, -0.0005).tex(sideGlowmap.getMinU(), sideGlowmap.getMaxV()).endVertex();
 		vb.setTranslation(0, 0, 0);
 		tess.draw();
 		
