@@ -2,6 +2,8 @@ package com.elytradev.fondue.module.obelisk;
 
 import com.elytradev.fondue.Fondue;
 import com.elytradev.fondue.module.obelisk.client.ModuleObeliskClient;
+import com.elytradev.fondue.module.waypoints.ModuleWaypoints;
+import com.elytradev.fondue.module.waypoints.client.ModuleWaypointsClient;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -13,6 +15,13 @@ public class TileEntityObelisk extends TileEntity {
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+	}
+	
+	@Override
+	public void onLoad() {
+		if (Fondue.isModuleLoaded(ModuleWaypointsClient.class)) {
+			Fondue.getModule(ModuleWaypointsClient.class).onObeliskLoad(getWorld(), getPos());
+		}
 	}
 	
 	public void attune(EntityPlayer p) {

@@ -12,11 +12,18 @@ import org.apache.logging.log4j.Logger;
 import com.elytradev.concrete.NetworkContext;
 import com.elytradev.fondue.module.Module;
 import com.elytradev.fondue.module.ModuleClient;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.MetadataCollection;
 import net.minecraftforge.fml.common.Mod;
@@ -156,6 +163,21 @@ public class Fondue {
 			m.onPostInit(e);
 		}
 		ProgressManager.pop(bar);
+	}
+	
+	public static void sendUpdatePacket(TileEntity te) {
+		sendUpdatePacket(te, te.getUpdateTag());
+	}
+	
+	public static void sendUpdatePacket(TileEntity te, NBTTagCompound nbt) {
+		WorldServer ws = (WorldServer)te.getWorld();
+		Chunk c = te.getWorld().getChunkFromBlockCoords(te.getPos());
+		SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(te.getPos(), te.getBlockMetadata(), nbt);
+		for (EntityPlayerMP player : te.getWorld().getPlayers(EntityPlayerMP.class, Predicates.alwaysTrue())) {
+			if (ws.getPlayerChunkMap().isPlayerWatchingChunk(player, c.xPosition, c.zPosition)) {
+				player.connection.sendPacket(packet);
+			}
+		}
 	}
 	
 }

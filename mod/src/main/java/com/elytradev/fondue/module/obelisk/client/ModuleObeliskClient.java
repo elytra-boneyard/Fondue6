@@ -72,12 +72,12 @@ public class ModuleObeliskClient extends ModuleClient {
 		double y = rtr == null ? teo.getPos().getY()+0.5 : rtr.hitVec.yCoord;
 		double z = rtr == null ? teo.getPos().getZ()+0.5 : rtr.hitVec.zCoord;
 		
-		float t = RenderObelisk.getTime(teo, 0);
+		float t = RenderObelisk.getTime(teo.getWorld(), teo.getPos(), 0);
 		
 		float sin = (MathHelper.sin(t)+2)/3;
 		float cos = (MathHelper.cos(t)+2)/3;
 		
-		rand.setSeed(RenderObelisk.getSeed(teo));
+		rand.setSeed(RenderObelisk.getSeed(teo.getPos()));
 		float r = RenderObelisk.selectColor(rand, sin, cos);
 		float g = RenderObelisk.selectColor(rand, sin, cos);
 		float b = RenderObelisk.selectColor(rand, sin, cos);
@@ -110,7 +110,7 @@ public class ModuleObeliskClient extends ModuleClient {
 	}
 	
 	@SubscribeEvent
-	public void onStitch(TextureStitchEvent e) {
+	public void onStitch(TextureStitchEvent.Pre e) {
 		e.getMap().registerSprite(new ResourceLocation("fondue", "blocks/obelisk_floor_glowmap"));
 		e.getMap().registerSprite(new ResourceLocation("fondue", "blocks/totem_glowmap"));
 		e.getMap().registerSprite(new ResourceLocation("fondue", "blocks/totem_top_glowmap"));
@@ -163,16 +163,16 @@ public class ModuleObeliskClient extends ModuleClient {
 				} catch (Throwable t) {}
 			}
 			
-			if (dist >= 0 && dist < 5) {
+			if (teo != null && dist >= 0 && dist < 5) {
 				dist -= 1;
 				if (dist < 0) dist = 0;
 				
-				float t = RenderObelisk.getTime(teo, e.getPartialTicks());
+				float t = RenderObelisk.getTime(teo.getWorld(), teo.getPos(), e.getPartialTicks());
 				
 				float sin = (MathHelper.sin(t)+2)/3;
 				float cos = (MathHelper.cos(t)+2)/3;
 				
-				rand.setSeed(RenderObelisk.getSeed(teo));
+				rand.setSeed(RenderObelisk.getSeed(teo.getPos()));
 				float r = RenderObelisk.selectColor(rand, sin, cos);
 				float g = RenderObelisk.selectColor(rand, sin, cos);
 				float b = RenderObelisk.selectColor(rand, sin, cos);

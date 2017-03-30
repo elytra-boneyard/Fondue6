@@ -1,0 +1,20 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"transform": "forge:default-block",
+		"model": "minecraft:cube",
+		"textures": {
+			"particle": "thermionics_world:blocks/basalt/smooth",
+			"north": "fondue:blocks/waypoint_side",
+			"south": "fondue:blocks/waypoint_side",
+			"east": "fondue:blocks/waypoint_side",
+			"west": "fondue:blocks/waypoint_side",
+			"up": "fondue:blocks/waypoint_pole",
+			"down": "fondue:blocks/waypoint_pole"
+		}
+	},
+	"variants": {
+		"inventory": [{}],
+		"normal": [{}]
+	}
+}

@@ -98,7 +98,7 @@ public class ModuleChair extends Module {
 			}
 			World w = DimensionManager.getWorld(0);
 			boolean timeskipping;
-			if (lounging.size() >= w.playerEntities.size()) {
+			if (w.playerEntities.size() > 0 && lounging.size() >= w.playerEntities.size()) {
 				w.setWorldTime((((w.getWorldTime()/TIMESKIP_RATE)*TIMESKIP_RATE)+TIMESKIP_RATE)%24000);
 				timeskipping = true;
 			} else {

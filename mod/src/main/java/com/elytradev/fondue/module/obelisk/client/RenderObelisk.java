@@ -17,21 +17,23 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 
 public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> {
 
-	public static float getTime(TileEntityObelisk te, float partialTicks) {
-		long l = te.getWorld().getTotalWorldTime();
-		l += te.hashCode();
+	public static float getTime(World world, BlockPos pos, float partialTicks) {
+		long l = world.getTotalWorldTime();
+		l += pos.hashCode();
 		return ((l%24000)+partialTicks)/20f;
 	}
 	
-	public static long getSeed(TileEntityObelisk te) {
+	public static long getSeed(BlockPos pos) {
 		long l = 31;
-		l += (31L * te.getPos().getX());
-		l += (31L * te.getPos().getY());
-		l += (31L * te.getPos().getZ());
+		l += (31L * pos.getX());
+		l += (31L * pos.getY());
+		l += (31L * pos.getZ());
 		return l;
 	}
 	
@@ -53,14 +55,14 @@ public class RenderObelisk extends TileEntitySpecialRenderer<TileEntityObelisk> 
 	public void renderTileEntityAt(TileEntityObelisk te, double x, double y, double z, float partialTicks, int destroyStage) {
 		super.renderTileEntityAt(te, x, y, z, partialTicks, destroyStage);
 		
-		float t = getTime(te, partialTicks);
+		float t = getTime(te.getWorld(), te.getPos(), partialTicks);
 		
 		float sin = (MathHelper.sin(t)+2)/3;
 		float cos = (MathHelper.cos(t)+2)/3;
 		
 		double distSq = (x*x)+(y*y)+(z*z);
 		
-		rand.setSeed(getSeed(te));
+		rand.setSeed(getSeed(te.getPos()));
 		float r = selectColor(rand, sin, cos);
 		float g = selectColor(rand, sin, cos);
 		float b = selectColor(rand, sin, cos);

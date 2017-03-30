@@ -1,4 +1,5 @@
 tile.fondue.chair.name=Comfy Chair
+tile.fondue.waypoint.name=Waypoint
 
 item.fondue.dyed_diamond_sword=Dyemond Sword
 item.fondue.dyed_diamond_pickaxe=Dyemond Pickaxe
@@ -31,3 +32,21 @@ fondue.rightClickToEquip=§e%s§r to just pick up
 fondue.sneakRightClickToTakeOtherGrave=§e%s+%s§r to pick up
 
 fondue.graveEmpty=Your grave wasn't spawned, as your inventory was empty
+
+fondue.waypoint.shape.solid.diamond=Solid Diamond
+fondue.waypoint.shape.solid.circle=Solid Circle
+fondue.waypoint.shape.solid.heart=Solid Heart
+fondue.waypoint.shape.solid.club=Solid Club
+fondue.waypoint.shape.solid.triangle=Solid Triangle
+fondue.waypoint.shape.solid.square=Solid Square
+fondue.waypoint.shape.solid.plus=Solid Plus
+fondue.waypoint.shape.solid.cross=Solid Cross
+
+fondue.waypoint.shape.hollow.diamond=Hollow Diamond
+fondue.waypoint.shape.hollow.circle=Hollow Circle
+fondue.waypoint.shape.hollow.heart=Hollow Heart
+fondue.waypoint.shape.hollow.club=Hollow Club
+fondue.waypoint.shape.hollow.triangle=Hollow Triangle
+fondue.waypoint.shape.hollow.square=Hollow Square
+fondue.waypoint.shape.hollow.plus=Hollow Plus
+fondue.waypoint.shape.hollow.cross=Hollow Cross
