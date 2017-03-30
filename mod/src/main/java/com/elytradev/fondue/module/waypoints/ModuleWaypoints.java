@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import static net.minecraft.item.EnumDyeColor.*;
 
@@ -104,6 +105,15 @@ public class ModuleWaypoints extends Module {
 		Fondue.inst.network.register(MessageSetWaypoints.class);
 		Fondue.inst.network.register(MessageUpdateWaypoint.class);
 		Fondue.inst.network.register(MessageRemoveWaypoint.class);
+		
+		GameRegistry.addRecipe(new ShapedOreRecipe(WAYPOINT, 
+				"oqo",
+				"odo",
+				"ooo",
+				
+				'o', "obsidian",
+				'd', "gemDiamond",
+				'q', "gemQuartz"));
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}
