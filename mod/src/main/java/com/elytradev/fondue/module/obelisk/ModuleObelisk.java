@@ -1,5 +1,6 @@
 package com.elytradev.fondue.module.obelisk;
 
+import java.util.List;
 import java.util.Set;
 
 import com.elytradev.fondue.Cardinal;
@@ -16,6 +17,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules.ValueType;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
@@ -114,11 +117,23 @@ public class ModuleObelisk extends Module {
 		int legLength = 0;
 		int i = 0;
 		int j = 0;
+		BiomeProvider biomeprovider = e.getWorld().getBiomeProvider();
+        List<Biome> allowedBiomes = biomeprovider.getBiomesToSpawnIn();
 		// scan in a counterclockwise outward spiral from 0, 0
-		// i.e. find the closest point to 0, 0 that contains an obelisk
+		// i.e. find the closest point to 0, 0 that contains an obelisk and isn't ocean
 		while (true) {
 			if (GenerateObelisk.isObeliskChunk(e.getWorld().getSeed(), x, z)) {
-				break;
+				boolean anySuitable = false;
+				for (byte biome : e.getWorld().getChunkFromChunkCoords(x, z).getBiomeArray()) {
+					Biome b = Biome.getBiome(biome);
+					if (allowedBiomes.contains(b)) {
+						anySuitable = true;
+						break;
+					}
+				}
+				if (anySuitable) {
+					break;
+				}
 			}
 			if (i >= legLength) {
 				dir = dir.ccw();
