@@ -33,6 +33,8 @@ fondue.sneakRightClickToTakeOtherGrave=§e%s+%s§r to pick up
 
 fondue.graveEmpty=Your grave wasn't spawned, as your inventory was empty
 
+fondue.waypointShapeChanged=Waypoint shape changed to %s
+
 fondue.waypoint.shape.solid.diamond=Solid Diamond
 fondue.waypoint.shape.solid.circle=Solid Circle
 fondue.waypoint.shape.solid.heart=Solid Heart

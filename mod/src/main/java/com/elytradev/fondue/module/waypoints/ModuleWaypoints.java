@@ -103,6 +103,7 @@ public class ModuleWaypoints extends Module {
 		
 		Fondue.inst.network.register(MessageSetWaypoints.class);
 		Fondue.inst.network.register(MessageUpdateWaypoint.class);
+		Fondue.inst.network.register(MessageRemoveWaypoint.class);
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}
