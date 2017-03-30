@@ -2,10 +2,15 @@ package com.elytradev.fondue.module.waypoints.client;
 
 public abstract class CompassWidget {
 
-	public static final CardinalCompassWidget NORTH = new CardinalCompassWidget(180, "N");
-	public static final CardinalCompassWidget EAST = new CardinalCompassWidget(-90, "E");
-	public static final CardinalCompassWidget SOUTH = new CardinalCompassWidget(0, "S");
-	public static final CardinalCompassWidget WEST = new CardinalCompassWidget(90, "W");
+	public static final CardinalCompassWidget NORTH = new CardinalCompassWidget(180, "N", false);
+	public static final CardinalCompassWidget EAST = new CardinalCompassWidget(-90, "E", false);
+	public static final CardinalCompassWidget SOUTH = new CardinalCompassWidget(0, "S", false);
+	public static final CardinalCompassWidget WEST = new CardinalCompassWidget(90, "W", false);
+	
+	public static final CardinalCompassWidget NORTH_WEST = new CardinalCompassWidget(135, "NW", true);
+	public static final CardinalCompassWidget NORTH_EAST = new CardinalCompassWidget(-135, "NE", true);
+	public static final CardinalCompassWidget SOUTH_WEST = new CardinalCompassWidget(45, "SW", true);
+	public static final CardinalCompassWidget SOUTH_EAST = new CardinalCompassWidget(-45, "SE", true);
 	
 	public abstract float getYaw();
 	public abstract double getDistanceSq();

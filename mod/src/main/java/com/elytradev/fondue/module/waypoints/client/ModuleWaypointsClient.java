@@ -56,7 +56,15 @@ public class ModuleWaypointsClient extends ModuleClient {
 		return ImmutableSet.of();
 	}
 	
-	private List<CompassWidget> baseWidgets = Lists.newArrayList(CompassWidget.NORTH, CompassWidget.EAST, CompassWidget.SOUTH, CompassWidget.WEST);
+	private List<CompassWidget> baseWidgets = Lists.newArrayList(
+			CompassWidget.NORTH,
+			CompassWidget.NORTH_EAST,
+			CompassWidget.EAST,
+			CompassWidget.SOUTH_EAST,
+			CompassWidget.SOUTH,
+			CompassWidget.SOUTH_WEST,
+			CompassWidget.WEST,
+			CompassWidget.NORTH_WEST);
 	private Map<BlockPos, WaypointCompassWidget> lookup = Maps.newHashMap();
 	private List<CompassWidget> widgets = Lists.newArrayList(baseWidgets);
 	
@@ -183,7 +191,7 @@ public class ModuleWaypointsClient extends ModuleClient {
 						}
 						
 					} GlStateManager.popMatrix();
-					Rendering.drawRect(objWidth/2f+1, 0, objWidth/2f+2, objHeight/2, color);
+					Rendering.drawRect(objWidth/2f+1, 0, objWidth/2f+2, 2, color);
 				} GlStateManager.popMatrix();
 			}
 		}
