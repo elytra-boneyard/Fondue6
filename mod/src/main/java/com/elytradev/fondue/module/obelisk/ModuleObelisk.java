@@ -120,7 +120,7 @@ public class ModuleObelisk extends Module {
 		BiomeProvider biomeprovider = e.getWorld().getBiomeProvider();
         List<Biome> allowedBiomes = biomeprovider.getBiomesToSpawnIn();
 		// scan in a counterclockwise outward spiral from 0, 0
-		// i.e. find the closest point to 0, 0 that contains an obelisk and isn't ocean
+		// i.e. find the closest point to 0, 0 that contains an obelisk and has a valid spawn biome
 		while (true) {
 			if (GenerateObelisk.isObeliskChunk(e.getWorld().getSeed(), x, z)) {
 				boolean anySuitable = false;

@@ -112,6 +112,10 @@ public class ModuleWaypointsClient extends ModuleClient {
 				int objWidth = (int)(width*scale)+4;
 				int objHeight = (int)(height*scale)+4;
 				
+				float fov = Minecraft.getMinecraft().gameSettings.fovSetting*1.75f;
+				
+				fov *= (objWidth / (float)e.getResolution().getScaledWidth());
+				
 				Gravity g = Gravity.NORTH;
 				
 				int x = g.resolveX(0, e.getResolution().getScaledWidth(), objWidth);
@@ -132,8 +136,8 @@ public class ModuleWaypointsClient extends ModuleClient {
 						
 						float playerYaw = MathHelper.wrapDegrees(Minecraft.getMinecraft().getRenderViewEntity().rotationYaw);
 						
-						float max = 67.5f;
-						float sc = (width)/90f;
+						float max = fov+45;
+						float sc = (width)/fov;
 						
 						
 						GlStateManager.colorMask(false, false, false, false);
