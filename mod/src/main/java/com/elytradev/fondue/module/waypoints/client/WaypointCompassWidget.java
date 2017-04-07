@@ -38,12 +38,12 @@ public class WaypointCompassWidget extends BlockCompassWidget {
 	
 	@Override
 	public double getFalloffSize() {
-		return 16;
+		return 256;
 	}
 	
 	@Override
 	public double getFalloffStart() {
-		return 256;
+		return 512;
 	}
 
 }

@@ -70,7 +70,7 @@ public class BlockWaypoint extends Block {
 						shape = WaypointShape.values()[ordinal%WaypointShape.values().length];
 					}
 					wd.shape = shape;
-					new MessageUpdateWaypoint(wd).sendToAllWatching(worldIn, pos);
+					new MessageUpdateWaypoint(wd).sendToAllIn(worldIn);
 					worldData.markDirty();
 					playerIn.sendStatusMessage(new TextComponentTranslation("fondue.waypointShapeChanged", new TextComponentTranslation("fondue.waypoint.shape."+style.name().toLowerCase(Locale.ROOT)+"."+shape.name().toLowerCase(Locale.ROOT))), false);
 				}
@@ -100,7 +100,7 @@ public class BlockWaypoint extends Block {
 							}
 							worldData.markDirty();
 							tew.color = newColor;
-							new MessageUpdateWaypoint(wd).sendToAllWatching(worldIn, pos);
+							new MessageUpdateWaypoint(wd).sendToAllIn(worldIn);
 							Fondue.sendUpdatePacket(tew);
 							if (!playerIn.isCreative()) {
 								is.shrink(1);
